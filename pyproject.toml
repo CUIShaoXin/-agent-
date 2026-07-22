@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "minimum-viable-agent"
+version = "0.1.0"
+description = "A minimal agent runtime built from scratch"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+mini-agent = "min_agent.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
