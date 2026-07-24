@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { CustomerServiceDemo } from "../components/CustomerServiceDemo";
 
 const loopSteps = [
   { number: "01", label: "接收输入", detail: "保存用户消息，并用 user_id + session_id 召回当前窗口的记忆。" },
@@ -79,7 +80,17 @@ export default function Home() {
   const [activeStep, setActiveStep] = useState(0);
   const [running, setRunning] = useState(false);
   const [activeFile, setActiveFile] = useState("runtime");
+  const [route, setRoute] = useState<"home" | "customer-service">("home");
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    const syncRoute = () => {
+      setRoute(window.location.hash === "#customer-service" ? "customer-service" : "home");
+    };
+    syncRoute();
+    window.addEventListener("hashchange", syncRoute);
+    return () => window.removeEventListener("hashchange", syncRoute);
+  }, []);
 
   useEffect(() => () => {
     if (timer.current) clearInterval(timer.current);
@@ -102,6 +113,10 @@ export default function Home() {
     }, 900);
   }
 
+  if (route === "customer-service") {
+    return <CustomerServiceDemo />;
+  }
+
   return (
     <main>
       <nav className="nav shell" aria-label="主导航">
@@ -113,7 +128,7 @@ export default function Home() {
           <a href="#learn">学习路径</a>
           <a href="#lab">Loop 实验室</a>
           <a href="#code">代码导读</a>
-          <a href="https://minimum-agent-lab.cuihshaoxin6.chatgpt.site/#customer-service">智能客服 Agent</a>
+          <a href="#customer-service">智能客服 Agent</a>
         </div>
         <a className="nav-github" href="https://github.com/CUIShaoXin/-agent-" target="_blank" rel="noreferrer">
           GitHub <span aria-hidden="true">↗</span>
