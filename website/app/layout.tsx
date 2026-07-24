@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -13,42 +12,38 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export async function generateMetadata(): Promise<Metadata> {
-  const requestHeaders = await headers();
-  const host =
-    requestHeaders.get("x-forwarded-host") ??
-    requestHeaders.get("host") ??
-    "localhost:3000";
-  const protocol =
-    requestHeaders.get("x-forwarded-proto") ??
-    (host.startsWith("localhost") ? "http" : "https");
-  const base = new URL(`${protocol}://${host}`);
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  "https://minimum-agent-lab.cuihshaoxin6.chatgpt.site";
+const base = new URL(siteUrl);
+const ogImagePath = process.env.GITHUB_ACTIONS === "true"
+  ? "/-agent-/og.png"
+  : "/og.png";
 
-  return {
-    metadataBase: base,
-    title: "Minimum Agent Lab｜从零实现一个最小可用 Agent",
-    description:
-      "一份可运行、可测试、可追踪的 Agent Runtime 开源教程。从 Loop、Tools、Session 到 Context，逐层理解智能体。",
-    openGraph: {
-      title: "Minimum Agent Lab",
-      description: "不用 Agent 框架，从零读懂并实现一个最小可用 Agent。",
-      type: "website",
-      images: [
-        {
-          url: new URL("/og.png", base).toString(),
-          width: 1200,
-          height: 630,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: "Minimum Agent Lab",
-      description: "不用 Agent 框架，从零读懂并实现一个最小可用 Agent。",
-      images: [new URL("/og.png", base).toString()],
-    },
-  };
-}
+export const metadata: Metadata = {
+  metadataBase: base,
+  title: "Minimum Agent Lab｜从零实现一个最小可用 Agent",
+  description:
+    "一份可运行、可测试、可追踪的 Agent Runtime 开源教程。从 Loop、Tools、Session 到 Context，逐层理解智能体。",
+  openGraph: {
+    title: "Minimum Agent Lab",
+    description: "不用 Agent 框架，从零读懂并实现一个最小可用 Agent。",
+    type: "website",
+    images: [
+      {
+        url: new URL(ogImagePath, base).toString(),
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Minimum Agent Lab",
+    description: "不用 Agent 框架，从零读懂并实现一个最小可用 Agent。",
+    images: [new URL(ogImagePath, base).toString()],
+  },
+};
 
 export default function RootLayout({
   children,
