@@ -113,6 +113,7 @@ export default function Home() {
           <a href="#learn">学习路径</a>
           <a href="#lab">Loop 实验室</a>
           <a href="#code">代码导读</a>
+          <a href="#customer-service">智能客服 Agent</a>
         </div>
         <a className="nav-github" href="https://github.com/CUIShaoXin/-agent-" target="_blank" rel="noreferrer">
           GitHub <span aria-hidden="true">↗</span>
