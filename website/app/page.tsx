@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { EnterpriseWorkbench } from "../components/EnterpriseWorkbench";
 
 const loopSteps = [
   { number: "01", label: "接收输入", detail: "保存用户消息，并用 user_id + session_id 召回当前窗口的记忆。" },
@@ -109,7 +110,8 @@ export default function Home() {
           <span className="brand-mark">MA</span>
           <span>Minimum Agent Lab</span>
         </a>
-        <div className="nav-links">
+          <div className="nav-links">
+            <a href="#enterprise">Agent 工作台</a>
           <a href="#learn">学习路径</a>
           <a href="#lab">Loop 实验室</a>
           <a href="#code">代码导读</a>
@@ -163,6 +165,8 @@ export default function Home() {
           <span>Context Compression</span><i>✦</i><span>Execution Trace</span><i>✦</i><span>Testable by Design</span>
         </div>
       </section>
+
+      <EnterpriseWorkbench />
 
       <section className="section shell" id="learn">
         <div className="section-heading">
