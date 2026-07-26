@@ -39,6 +39,50 @@ button { color: inherit; }
 .nav-links { display: flex; align-items: center; gap: 30px; color: var(--muted); font-size: 14px; }
 .nav-links a, .text-link { transition: color 180ms ease; }
 .nav-links a:hover, .text-link:hover { color: var(--violet); }
+.agent-projects-dropdown { position: relative; z-index: 40; }
+.agent-projects-trigger {
+  display: inline-flex; align-items: center; gap: 5px; border: 0; border-radius: 10px;
+  padding: 9px 12px; background: #f3f0ff; color: #6d5dfc; cursor: pointer;
+  font-weight: 600; transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+.agent-projects-trigger:hover, .agent-projects-trigger[aria-expanded="true"] {
+  color: #5c49f3; background: #ebe6ff; box-shadow: 0 7px 18px rgba(109,93,252,.14);
+  transform: translateY(-1px);
+}
+.agent-projects-trigger span { transition: transform 180ms ease; }
+.agent-projects-trigger[aria-expanded="true"] span { transform: rotate(180deg); }
+.agent-projects-menu-wrap {
+  position: absolute; top: 100%; right: 0; width: 300px; padding-top: 8px;
+  opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(-7px) scale(.98);
+  transform-origin: top right; transition: opacity 170ms ease, transform 170ms ease, visibility 170ms ease;
+}
+.agent-projects-menu-wrap.is-open {
+  opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0) scale(1);
+}
+.agent-projects-menu {
+  overflow: hidden; padding: 7px; background: #fff; border: 1px solid #e7e3ec;
+  border-radius: 14px; box-shadow: 0 18px 42px rgba(35,27,58,.14);
+}
+.nav-links .agent-project-item {
+  min-height: 78px; display: grid; grid-template-columns: 34px 1fr; gap: 10px;
+  padding: 11px 10px; border-radius: 10px; color: var(--ink); cursor: default;
+  transition: background 160ms ease, transform 160ms ease;
+}
+.nav-links .agent-project-item + .agent-project-item { border-top: 1px solid #efedf2; }
+.nav-links a.agent-project-item:hover { color: var(--ink); background: #f8f6ff; transform: translateX(2px); }
+.agent-project-icon { padding-top: 2px; font-size: 21px; line-height: 1; }
+.agent-project-copy { min-width: 0; display: grid; grid-template-columns: 1fr auto; gap: 3px 8px; }
+.agent-project-copy strong { align-self: center; font-size: 13px; font-style: normal; font-weight: 720; }
+.agent-project-copy small {
+  grid-column: 1 / -1; color: #77717d; font-size: 11px; line-height: 1.45;
+}
+.agent-project-copy em {
+  justify-self: start; grid-column: 1 / -1; border-radius: 999px; padding: 2px 7px;
+  background: #f0eef4; color: #77717d; font-size: 9px; font-style: normal; font-weight: 700;
+}
+.agent-project-copy em[data-status="已上线"] { background: #e8f8ef; color: #238653; }
+.agent-project-copy em[data-status="开发中"] { background: #fff3db; color: #a66500; }
+.agent-project-copy em[data-status="规划中"] { background: #f0eef4; color: #716b78; }
 .nav-github {
   border: 1px solid var(--ink); border-radius: 999px; padding: 10px 17px;
   font-size: 13px; font-weight: 700; transition: background 180ms ease, color 180ms ease;

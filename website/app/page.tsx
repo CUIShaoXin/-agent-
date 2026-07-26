@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CustomerServiceDemo } from "../components/CustomerServiceDemo";
+import { AgentProjectsDropdown } from "../components/Navbar/AgentProjectsDropdown";
 
 const loopSteps = [
   { number: "01", label: "接收输入", detail: "保存用户消息，并用 user_id + session_id 召回当前窗口的记忆。" },
@@ -128,7 +129,7 @@ export default function Home() {
           <a href="#learn">学习路径</a>
           <a href="#lab">Loop 实验室</a>
           <a href="#code">代码导读</a>
-          <a href="#customer-service">Agent实战项目</a>
+          <AgentProjectsDropdown />
         </div>
         <a className="nav-github" href="https://github.com/CUIShaoXin/-agent-" target="_blank" rel="noreferrer">
           GitHub <span aria-hidden="true">↗</span>
