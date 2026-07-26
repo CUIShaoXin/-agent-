@@ -4,6 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { CustomerServiceDemo } from "../components/CustomerServiceDemo";
 import { AgentProjectsDropdown } from "../components/Navbar/AgentProjectsDropdown";
 import { LearningPlatform } from "../components/learning/LearningPlatform";
+import { CourseMapPage } from "../components/course/CourseMapPage";
+import { SessionPageFrame } from "../components/course/SessionPageFrame";
+
+type AppRoute = "home" | "customer-service" | "course" | "session-1" | "session-2" | "session-3" | "session-4" | "session-5" | "session-6";
 
 const loopSteps = [
   { number: "01", label: "接收输入", detail: "保存用户消息，并用 user_id + session_id 召回当前窗口的记忆。" },
@@ -47,12 +51,16 @@ export default function Home() {
   const [activeStep, setActiveStep] = useState(0);
   const [running, setRunning] = useState(false);
   const [activeFile, setActiveFile] = useState("runtime");
-  const [route, setRoute] = useState<"home" | "customer-service">("home");
+  const [route, setRoute] = useState<AppRoute>("home");
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     const syncRoute = () => {
-      setRoute(window.location.hash === "#customer-service" ? "customer-service" : "home");
+      const hash = window.location.hash;
+      if (hash === "#customer-service") return setRoute("customer-service");
+      if (hash === "#course") return setRoute("course");
+      if (/^#session-[1-6]$/.test(hash)) return setRoute(hash.slice(1) as AppRoute);
+      setRoute("home");
     };
     syncRoute();
     window.addEventListener("hashchange", syncRoute);
@@ -82,6 +90,12 @@ export default function Home() {
 
   if (route === "customer-service") {
     return <CustomerServiceDemo />;
+  }
+  if (route === "course") {
+    return <CourseMapPage />;
+  }
+  if (route.startsWith("session-")) {
+    return <SessionPageFrame sessionNumber={Number(route.split("-")[1])} />;
   }
 
   return (
