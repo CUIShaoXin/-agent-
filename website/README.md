@@ -16,6 +16,15 @@ npm run dev
 npm run build
 ```
 
+智能客服页面通过 `NEXT_PUBLIC_AGENT_API_URL` 调用 Python 后端的 `POST /chat`：
+
+```bash
+cp .env.example .env.local
+npm run dev
+```
+
+默认后端地址为 `http://localhost:8000`。部署时请将 `NEXT_PUBLIC_AGENT_API_URL` 设置为可公开访问的 HTTPS API 地址。
+
 This starter does not use `wrangler.jsonc`.
 
 ## Included Shape

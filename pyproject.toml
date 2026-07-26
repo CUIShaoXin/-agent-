@@ -8,11 +8,17 @@ version = "0.1.0"
 description = "A minimal agent runtime built from scratch"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "fastapi>=0.115,<1",
+    "httpx>=0.28,<1",
+    "pymysql>=1.1,<2",
+    "pypdf>=5,<7",
+    "python-multipart>=0.0.20,<1",
+    "uvicorn[standard]>=0.30,<1",
+]
 
 [project.scripts]
 mini-agent = "min_agent.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-

@@ -1,12 +1,22 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 
 type Message = {
   id: number;
   role: "assistant" | "user";
   text: string;
 };
+
+type ChatResponse = {
+  answer: string;
+  session_id: string;
+  intent: string;
+  sources: Array<{ filename: string }>;
+  database_used: boolean;
+};
+
+const API_BASE_URL = (process.env.NEXT_PUBLIC_AGENT_API_URL || "http://localhost:8000").replace(/\/$/, "");
 
 const quickPrompts = [
   "这款产品适合什么团队？",
@@ -15,21 +25,21 @@ const quickPrompts = [
   "我想删除数据库",
 ];
 
-function replyFor(input: string) {
-  if (/删除|数据库|密码|密钥/.test(input)) {
-    return "这个请求涉及高风险操作，我不能直接执行。可以先帮你确认数据范围、备份状态和审批流程，再提供安全的操作建议。";
-  }
-  if (/私有化|部署/.test(input)) {
-    return "支持私有化部署。通常会先确认并发量、数据隔离、模型接入方式和运维环境，再给出部署清单与实施周期。";
-  }
-  if (/1000|企业|团队|适合/.test(input)) {
-    return "适合中大型团队。针对 1000 人企业，建议采用企业版方案，启用统一知识库、权限分组、多会话记忆和审计日志。";
-  }
-  return "我可以结合产品知识库继续为你分析。你可以补充使用人数、主要场景和部署偏好，我会给出更准确的建议。";
+function getSessionId() {
+  const storageKey = "minimum-agent-customer-session";
+  const existing = window.sessionStorage.getItem(storageKey);
+  if (existing) return existing;
+  const created = window.crypto.randomUUID?.() || `cs-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  window.sessionStorage.setItem(storageKey, created);
+  return created;
 }
 
 export function CustomerServiceDemo() {
   const [input, setInput] = useState("");
+  const [sending, setSending] = useState(false);
+  const [intent, setIntent] = useState("产品咨询");
+  const [knowledgeSource, setKnowledgeSource] = useState("企业知识库");
+  const sessionId = useRef("");
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
@@ -38,20 +48,47 @@ export function CustomerServiceDemo() {
     },
   ]);
 
-  function sendMessage(text: string) {
+  async function sendMessage(text: string) {
     const value = text.trim();
-    if (!value) return;
-    setMessages((current) => [
-      ...current,
-      { id: Date.now(), role: "user", text: value },
-      { id: Date.now() + 1, role: "assistant", text: replyFor(value) },
-    ]);
+    if (!value || sending) return;
+    const userMessageId = Date.now();
+    setMessages((current) => [...current, { id: userMessageId, role: "user", text: value }]);
     setInput("");
+    setSending(true);
+    try {
+      sessionId.current ||= getSessionId();
+      const response = await fetch(`${API_BASE_URL}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: value, session_id: sessionId.current }),
+      });
+      const payload = await response.json().catch(() => ({})) as Partial<ChatResponse> & { detail?: string };
+      if (!response.ok || !payload.answer) {
+        throw new Error(payload.detail || `Agent API 请求失败（${response.status}）`);
+      }
+      setMessages((current) => [...current, { id: userMessageId + 1, role: "assistant", text: payload.answer! }]);
+      setIntent(payload.intent || "产品咨询");
+      setKnowledgeSource(
+        payload.database_used
+          ? "企业知识库 · MySQL"
+          : payload.sources?.length
+            ? payload.sources.map((source) => source.filename).slice(0, 2).join(" · ")
+            : "企业知识库",
+      );
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : "未知错误";
+      setMessages((current) => [
+        ...current,
+        { id: userMessageId + 1, role: "assistant", text: `暂时无法连接 Agent 服务：${detail}` },
+      ]);
+    } finally {
+      setSending(false);
+    }
   }
 
   function submit(event: FormEvent) {
     event.preventDefault();
-    sendMessage(input);
+    void sendMessage(input);
   }
 
   return (
@@ -92,7 +129,7 @@ export function CustomerServiceDemo() {
               <span>快捷示例</span>
               <div>
                 {quickPrompts.map((prompt) => (
-                  <button type="button" key={prompt} onClick={() => sendMessage(prompt)}>{prompt}</button>
+                  <button type="button" key={prompt} disabled={sending} onClick={() => void sendMessage(prompt)}>{prompt}</button>
                 ))}
               </div>
             </div>
@@ -103,8 +140,9 @@ export function CustomerServiceDemo() {
                 onChange={(event) => setInput(event.target.value)}
                 placeholder="输入你的问题，例如：你们支持私有化部署吗？"
                 aria-label="输入客服问题"
+                disabled={sending}
               />
-              <button type="submit">发送 →</button>
+              <button type="submit" disabled={sending}>{sending ? "处理中…" : "发送 →"}</button>
             </form>
           </section>
 
@@ -119,14 +157,14 @@ export function CustomerServiceDemo() {
                 <li><span>✓</span> 多 Session 记忆隔离</li>
                 <li><span>✓</span> 安全边界与审计</li>
               </ul>
-              <button type="button" onClick={() => sendMessage("帮我推荐适合 1000 人企业的方案")}>咨询企业方案</button>
+              <button type="button" disabled={sending} onClick={() => void sendMessage("帮我推荐适合 1000 人企业的方案")}>咨询企业方案</button>
             </section>
 
             <section className="cs-panel">
               <div className="cs-panel-title"><span>本次会话</span><small>MEMORY ON</small></div>
               <dl className="cs-facts">
-                <div><dt>当前意图</dt><dd>产品咨询</dd></div>
-                <div><dt>知识来源</dt><dd>产品文档 · FAQ</dd></div>
+                <div><dt>当前意图</dt><dd>{intent}</dd></div>
+                <div><dt>知识来源</dt><dd>{knowledgeSource}</dd></div>
                 <div><dt>上下文</dt><dd>{messages.length} 条消息</dd></div>
               </dl>
             </section>

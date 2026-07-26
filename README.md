@@ -34,6 +34,71 @@ mini-agent --user A --session window-1 --once "查深圳天气并记下下班带
 
 默认数据保存在 `data/agent.db`。可复制 `.env.example` 了解可配置项；本项目不自动读取 `.env`，避免额外依赖，请把变量设置到 Shell 或 IDE Run Configuration。
 
+## 真实智能客服 API
+
+智能客服页面不再使用关键词 Mock 回复，而是调用独立 FastAPI 服务：
+
+```powershell
+python -m pip install -e .
+$env:OPENAI_API_KEY="你的 API Key"
+$env:MYSQL_HOST="127.0.0.1"
+$env:MYSQL_USER="agent_readonly"
+$env:MYSQL_PASSWORD="你的只读账号密码"
+$env:MYSQL_DATABASE="enterprise"
+python -m uvicorn min_agent.api:app --host 0.0.0.0 --port 8000
+```
+
+接口：
+
+- `POST /chat`：请求体为 `{"message":"...","session_id":"..."}`。
+- `POST /knowledge/upload`：上传 `.txt`、`.md`、`.csv` 或 `.pdf` 企业资料，自动切块并生成 Embedding。
+- `GET /health`：查看 LLM、MySQL 和知识库是否就绪。
+- `GET /docs`：FastAPI 自动生成的接口调试页面。
+
+上传知识库示例：
+
+```powershell
+curl.exe -X POST http://localhost:8000/knowledge/upload -F "file=@docs/company-faq.md"
+```
+
+调用聊天接口：
+
+```powershell
+$body = @{ message = "公司的售后政策是什么？"; session_id = "window-1" } | ConvertTo-Json
+Invoke-RestMethod http://localhost:8000/chat -Method Post -ContentType "application/json" -Body $body
+```
+
+前端复制 `website/.env.example` 为 `website/.env.local`，把 `NEXT_PUBLIC_AGENT_API_URL` 设置为后端地址。线上 GitHub Pages 在仓库 Variables 中配置同名变量。
+
+### 智能客服调用流程
+
+```mermaid
+flowchart LR
+    U["用户问题 + session_id"] --> I["Intent 识别"]
+    I --> R["SQLite 向量知识库检索"]
+    I -->|需要业务数据| Q["读取 MySQL Schema"]
+    Q --> S["生成并校验只读 SELECT"]
+    S --> D["MySQL 查询"]
+    R --> L["LLM 证据总结"]
+    D --> L
+    M["SQLite Session Memory"] --> I
+    M --> L
+    L --> A["返回 answer"]
+```
+
+### MySQL 连接与安全
+
+连接参数全部来自环境变量：`MYSQL_HOST`、`MYSQL_PORT`、`MYSQL_USER`、`MYSQL_PASSWORD`、`MYSQL_DATABASE`。`MYSQL_ALLOWED_TABLES` 可限制 Agent 能查询的业务表，`MYSQL_MAX_ROWS` 控制最大返回行数。
+
+请为 Agent 创建只读账号，不要使用 root：
+
+```sql
+CREATE USER 'agent_readonly'@'%' IDENTIFIED BY 'replace-with-strong-password';
+GRANT SELECT ON enterprise.* TO 'agent_readonly'@'%';
+```
+
+后端还会执行第二层 SQL Guard：只允许单条 `SELECT`、禁止注释和危险关键字、禁止系统库，并自动添加 `LIMIT`。MySQL 查询失败时会作为受控 observation 交给总结模型，不向前端暴露连接密码。
+
 ## 系统设计
 
 ```mermaid
@@ -58,6 +123,10 @@ flowchart LR
 - `src/min_agent/llm.py`：原生 HTTP 调用 Responses API，解析 provider 输出。
 - `src/min_agent/storage.py`：SQLite messages、summary、todos、traces。
 - `src/min_agent/cli.py`：终端交互入口。
+- `src/min_agent/api.py`：`/chat`、知识库上传与健康检查接口。
+- `src/min_agent/customer_agent.py`：Intent → RAG → MySQL → LLM 的客服 Agent 编排。
+- `src/min_agent/knowledge.py`：文档解析、切块、Embedding 与 SQLite 向量召回。
+- `src/min_agent/mysql_database.py`：MySQL schema 读取、只读校验和查询。
 
 ## Loop 如何工作
 
