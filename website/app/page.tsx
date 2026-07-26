@@ -3,47 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import { CustomerServiceDemo } from "../components/CustomerServiceDemo";
 import { AgentProjectsDropdown } from "../components/Navbar/AgentProjectsDropdown";
+import { LearningPlatform } from "../components/learning/LearningPlatform";
 
 const loopSteps = [
   { number: "01", label: "接收输入", detail: "保存用户消息，并用 user_id + session_id 召回当前窗口的记忆。" },
   { number: "02", label: "LLM 决策", detail: "把上下文与工具 Schema 发给模型，由模型决定直接回答还是调用工具。" },
   { number: "03", label: "执行工具", detail: "ToolRegistry 根据名称分发，捕获异常并产出结构化 observation。" },
   { number: "04", label: "继续或结束", detail: "工具结果回填给模型；得到 final answer 时结束，否则进入下一轮。" },
-];
-
-const lessons = [
-  {
-    no: "01",
-    eyebrow: "The Loop",
-    title: "先让 Agent 跑起来",
-    text: "用一个清晰的 for loop 串起输入、决策、工具与最终答案。没有魔法，只有可读的控制流。",
-    tags: ["max_steps", "停止条件", "异常边界"],
-    tone: "violet",
-  },
-  {
-    no: "02",
-    eyebrow: "Tool Calling",
-    title: "把能力装进注册表",
-    text: "每个工具都拥有名称、描述、JSON Schema 和 handler，模型只看 Schema 就能自主选择。",
-    tags: ["calculator", "search", "weather", "todo"],
-    tone: "orange",
-  },
-  {
-    no: "03",
-    eyebrow: "Memory",
-    title: "让每个窗口拥有自己的记忆",
-    text: "SQLite 以 user_id + session_id 隔离消息、待办和摘要，窗口之间不串线，随时可以继续聊。",
-    tags: ["SQLite", "session", "多轮追问"],
-    tone: "green",
-  },
-  {
-    no: "04",
-    eyebrow: "Context",
-    title: "只把有用的信息给模型",
-    text: "保留近期原文，将更早的对话压缩成 session summary，控制成本同时保留关键状态。",
-    tags: ["召回", "压缩", "tool observation"],
-    tone: "blue",
-  },
 ];
 
 const codeSamples: Record<string, string> = {
@@ -181,31 +147,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section shell" id="learn">
-        <div className="section-heading">
-          <div><span className="section-no">01 / LEARNING PATH</span><h2>四块积木，搭出你的 Agent</h2></div>
-          <p>每个模块都对应仓库中的真实实现。先理解边界，再进入代码。</p>
-        </div>
-        <div className="lesson-grid">
-          {lessons.map((lesson) => (
-            <article className={`lesson-card ${lesson.tone}`} key={lesson.no}>
-              <div className="lesson-visual">
-                <span className="lesson-number">{lesson.no}</span>
-                {lesson.no === "01" && <div className="orbit"><i /><i /><i /><b>LOOP</b></div>}
-                {lesson.no === "02" && <div className="schema-stack"><i>name</i><i>description</i><i>parameters</i></div>}
-                {lesson.no === "03" && <div className="session-windows"><i>window_1</i><i>window_2</i></div>}
-                {lesson.no === "04" && <div className="context-bars"><i /><i /><i /><i /></div>}
-              </div>
-              <div className="lesson-content">
-                <span className="lesson-eyebrow">{lesson.eyebrow}</span>
-                <h3>{lesson.title}</h3>
-                <p>{lesson.text}</p>
-                <div className="tag-row">{lesson.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
+      <LearningPlatform />
 
       <section className="lab-section" id="lab">
         <div className="shell">
