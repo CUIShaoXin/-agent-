@@ -5,9 +5,8 @@ import { CustomerServiceDemo } from "../components/CustomerServiceDemo";
 import { AgentProjectsDropdown } from "../components/Navbar/AgentProjectsDropdown";
 import { LearningPlatform } from "../components/learning/LearningPlatform";
 import { CourseMapPage } from "../components/course/CourseMapPage";
-import { SessionPageFrame } from "../components/course/SessionPageFrame";
-
-type AppRoute = "home" | "customer-service" | "course" | "session-1" | "session-2" | "session-3" | "session-4" | "session-5" | "session-6";
+import { SessionPage } from "../components/course/SessionPage";
+import { parseHashRoute, type AppRoute } from "../lib/hashRouter";
 
 const loopSteps = [
   { number: "01", label: "接收输入", detail: "保存用户消息，并用 user_id + session_id 召回当前窗口的记忆。" },
@@ -51,16 +50,12 @@ export default function Home() {
   const [activeStep, setActiveStep] = useState(0);
   const [running, setRunning] = useState(false);
   const [activeFile, setActiveFile] = useState("runtime");
-  const [route, setRoute] = useState<AppRoute>("home");
+  const [route, setRoute] = useState<AppRoute>({ page: "home" });
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     const syncRoute = () => {
-      const hash = window.location.hash;
-      if (hash === "#customer-service") return setRoute("customer-service");
-      if (hash === "#course") return setRoute("course");
-      if (/^#session-[1-6]$/.test(hash)) return setRoute(hash.slice(1) as AppRoute);
-      setRoute("home");
+      setRoute(parseHashRoute(window.location.hash));
     };
     syncRoute();
     window.addEventListener("hashchange", syncRoute);
@@ -88,14 +83,14 @@ export default function Home() {
     }, 900);
   }
 
-  if (route === "customer-service") {
+  if (route.page === "customer-service") {
     return <CustomerServiceDemo />;
   }
-  if (route === "course") {
+  if (route.page === "course") {
     return <CourseMapPage />;
   }
-  if (route.startsWith("session-")) {
-    return <SessionPageFrame sessionNumber={Number(route.split("-")[1])} />;
+  if (route.page === "session") {
+    return <SessionPage sessionNumber={route.sessionNumber} />;
   }
 
   return (
@@ -124,7 +119,7 @@ export default function Home() {
             不依赖 LangGraph 或任何 Agent 框架。从一个可读的 Loop 出发，亲手实现工具调用、Session 记忆、Context 压缩与 Trace。
           </p>
           <div className="hero-actions">
-            <a className="button primary" href="#learn">开始学习 <span>→</span></a>
+            <a className="button primary" href="#/course">开始学习 <span>→</span></a>
             <a className="button secondary" href="https://github.com/CUIShaoXin/-agent-" target="_blank" rel="noreferrer">查看源码</a>
           </div>
           <dl className="hero-stats">

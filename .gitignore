@@ -4,6 +4,8 @@ __pycache__/
 .venv/
 .env
 data/
+!website/data/
+!website/data/sessions.ts
 *.db
 *.sqlite3
 *.egg-info/
