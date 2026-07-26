@@ -1,11 +1,15 @@
 "use client";
 
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { AgentRunStatus, AgentTrace } from "./customer-service/AgentTrace";
+import { EmbeddingStatus, KnowledgeBasePanel } from "./customer-service/KnowledgeBasePanel";
+import { MemoryPanel } from "./customer-service/MemoryPanel";
 
 type Message = {
   id: number;
   role: "assistant" | "user";
   text: string;
+  sources?: string[];
 };
 
 type ChatResponse = {
@@ -16,13 +20,25 @@ type ChatResponse = {
   database_used: boolean;
 };
 
+type KnowledgeUploadResponse = {
+  ok: boolean;
+  document_id: string;
+  filename: string;
+  chunks: number;
+};
+
+type HealthResponse = {
+  status: string;
+  knowledge_documents: number;
+};
+
 const API_BASE_URL = (process.env.NEXT_PUBLIC_AGENT_API_URL || "http://localhost:8000").replace(/\/$/, "");
 
 const quickPrompts = [
-  "这款产品适合什么团队？",
-  "你们支持私有化部署吗？",
-  "帮我推荐适合 1000 人企业的方案",
-  "我想删除数据库",
+  "SafeVR 支持哪些培训场景？",
+  "公司的售后政策是什么？",
+  "请总结上传文档中的部署要求",
+  "刚才提到的方案有哪些限制？",
 ];
 
 function getSessionId() {
@@ -37,26 +53,75 @@ function getSessionId() {
 export function CustomerServiceDemo() {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
-  const [intent, setIntent] = useState("产品咨询");
+  const [uploading, setUploading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState("支持 PDF / Markdown");
+  const [intent, setIntent] = useState("等待识别");
   const [knowledgeSource, setKnowledgeSource] = useState("企业知识库");
+  const [documentCount, setDocumentCount] = useState<number | null>(null);
+  const [embeddingStatus, setEmbeddingStatus] = useState<EmbeddingStatus>("waiting");
+  const [retrieverOnline, setRetrieverOnline] = useState(false);
+  const [traceStatus, setTraceStatus] = useState<AgentRunStatus>("idle");
+  const [traceStep, setTraceStep] = useState(0);
+  const [lastQuestion, setLastQuestion] = useState("");
+  const [activeSessionId, setActiveSessionId] = useState("");
   const sessionId = useRef("");
+  const nextMessageId = useRef(2);
+  const traceTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
       role: "assistant",
-      text: "你好，我是 Minimum Agent Lab 智能客服。你可以咨询产品能力、部署方式或企业方案。",
+      text: "你好，我是 RAG 智能客服 Agent。请上传企业 PDF 或 Markdown 文档，然后直接向知识库提问。",
     },
   ]);
+
+  useEffect(() => {
+    let active = true;
+    void fetch(`${API_BASE_URL}/health`)
+      .then((response) => response.json() as Promise<HealthResponse>)
+      .then((payload) => {
+        if (!active) return;
+        setRetrieverOnline(payload.status === "ok");
+        setDocumentCount(payload.knowledge_documents ?? 0);
+        if ((payload.knowledge_documents ?? 0) > 0) setEmbeddingStatus("ready");
+      })
+      .catch(() => {
+        if (active) setRetrieverOnline(false);
+      });
+    return () => {
+      active = false;
+      if (traceTimer.current) clearInterval(traceTimer.current);
+    };
+  }, []);
+
+  function stopTraceTimer() {
+    if (traceTimer.current) clearInterval(traceTimer.current);
+    traceTimer.current = null;
+  }
+
+  function startTrace(question: string) {
+    stopTraceTimer();
+    setLastQuestion(question);
+    setTraceStatus("running");
+    setTraceStep(0);
+    traceTimer.current = setInterval(() => {
+      setTraceStep((current) => Math.min(current + 1, 3));
+    }, 650);
+  }
 
   async function sendMessage(text: string) {
     const value = text.trim();
     if (!value || sending) return;
-    const userMessageId = Date.now();
+    startTrace(value);
+    const userMessageId = nextMessageId.current++;
     setMessages((current) => [...current, { id: userMessageId, role: "user", text: value }]);
     setInput("");
     setSending(true);
     try {
-      sessionId.current ||= getSessionId();
+      if (!sessionId.current) {
+        sessionId.current = getSessionId();
+        setActiveSessionId(sessionId.current);
+      }
       const response = await fetch(`${API_BASE_URL}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -66,7 +131,14 @@ export function CustomerServiceDemo() {
       if (!response.ok || !payload.answer) {
         throw new Error(payload.detail || `Agent API 请求失败（${response.status}）`);
       }
-      setMessages((current) => [...current, { id: userMessageId + 1, role: "assistant", text: payload.answer! }]);
+      const sourceNames = [...new Set((payload.sources || []).map((source) => source.filename))];
+      stopTraceTimer();
+      setTraceStep(4);
+      setTraceStatus("success");
+      setMessages((current) => [
+        ...current,
+        { id: nextMessageId.current++, role: "assistant", text: payload.answer!, sources: sourceNames },
+      ]);
       setIntent(payload.intent || "产品咨询");
       setKnowledgeSource(
         payload.database_used
@@ -76,10 +148,12 @@ export function CustomerServiceDemo() {
             : "企业知识库",
       );
     } catch (error) {
+      stopTraceTimer();
+      setTraceStatus("failed");
       const detail = error instanceof Error ? error.message : "未知错误";
       setMessages((current) => [
         ...current,
-        { id: userMessageId + 1, role: "assistant", text: `暂时无法连接 Agent 服务：${detail}` },
+        { id: nextMessageId.current++, role: "assistant", text: `暂时无法连接 Agent 服务：${detail}` },
       ]);
     } finally {
       setSending(false);
@@ -91,6 +165,44 @@ export function CustomerServiceDemo() {
     void sendMessage(input);
   }
 
+  async function uploadKnowledge(file: File) {
+    if (uploading) return;
+    setUploading(true);
+    setEmbeddingStatus("processing");
+    setUploadStatus("正在解析并构建向量索引…");
+    const form = new FormData();
+    form.append("file", file);
+    try {
+      const response = await fetch(`${API_BASE_URL}/knowledge/upload`, {
+        method: "POST",
+        body: form,
+      });
+      const payload = await response.json().catch(() => ({})) as Partial<KnowledgeUploadResponse> & { detail?: string };
+      if (!response.ok || !payload.ok || !payload.filename || typeof payload.chunks !== "number") {
+        throw new Error(payload.detail || `知识库上传失败（${response.status}）`);
+      }
+      setKnowledgeSource(payload.filename);
+      setDocumentCount((current) => (current ?? 0) + 1);
+      setEmbeddingStatus("ready");
+      setRetrieverOnline(true);
+      setUploadStatus(`已建立 ${payload.chunks} 个知识片段`);
+      setMessages((current) => [
+        ...current,
+        {
+          id: nextMessageId.current++,
+          role: "assistant",
+          text: `知识库文件「${payload.filename}」已完成解析和向量索引，现在可以直接提问。`,
+        },
+      ]);
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : "未知错误";
+      setEmbeddingStatus("failed");
+      setUploadStatus(`上传失败：${detail}`);
+    } finally {
+      setUploading(false);
+    }
+  }
+
   return (
     <main className="cs-page">
       <header className="cs-header">
@@ -99,31 +211,47 @@ export function CustomerServiceDemo() {
           <span className="brand-mark">MA</span>
           <div><b>智能客服 Agent</b><small>Minimum Agent Lab Demo</small></div>
         </div>
-        <span className="cs-online"><i /> 服务在线</span>
+        <span className="cs-online"><i /> RAG Runtime Online</span>
       </header>
 
       <section className="cs-shell">
         <div className="cs-intro">
-          <div><span>AI CUSTOMER SERVICE</span><h1>让每次咨询，都得到专业回应</h1></div>
-          <p>知识问答、需求引导、边界防护、销售转化和多轮记忆，一次体验完整的智能客服 Agent。</p>
+          <div><span>RAG AGENT PLAYGROUND</span><h1>让企业知识，<br />真正被 Agent 理解</h1></div>
+          <p>基于 RAG、Agent Workflow 和多轮记忆，构建面向企业知识库的智能客服系统。<br /><br />支持 PDF、Markdown 文档导入，实现知识检索、智能问答和业务辅助。</p>
         </div>
 
         <div className="cs-workspace">
           <section className="cs-chat" aria-label="智能客服对话">
             <header>
               <div className="cs-avatar">AI</div>
-              <div><b>企业产品顾问</b><small><i /> 在线 · 知识库已连接</small></div>
-              <span>会话 #CS-0724</span>
+              <div><b>智能客服 Agent</b><small><i /> Knowledge Base Online</small></div>
+              <span>RAG PLAYGROUND</span>
             </header>
 
             <div className="cs-messages" aria-live="polite">
               {messages.map((message) => (
                 <div className={`cs-message ${message.role}`} key={message.id}>
                   <span>{message.role === "assistant" ? "AI" : "你"}</span>
-                  <p>{message.text}</p>
+                  <div className="cs-message-content">
+                    <p>{message.text}</p>
+                    {message.sources && message.sources.length > 0 && (
+                      <div className="cs-message-sources">
+                        <small>找到相关文档</small>
+                        {message.sources.map((source) => <b key={source}>{source}</b>)}
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
+              {sending && (
+                <div className="cs-message cs-thinking">
+                  <span>AI</span>
+                  <div className="cs-message-content"><p>正在检索知识库...</p><small>正在理解问题并召回相关文档</small></div>
+                </div>
+              )}
             </div>
+
+            <AgentTrace question={lastQuestion} status={traceStatus} activeStep={traceStep} />
 
             <div className="cs-quick">
               <span>快捷示例</span>
@@ -138,7 +266,7 @@ export function CustomerServiceDemo() {
               <input
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
-                placeholder="输入你的问题，例如：你们支持私有化部署吗？"
+                placeholder="输入知识库问题，例如：SafeVR 支持哪些培训场景？"
                 aria-label="输入客服问题"
                 disabled={sending}
               />
@@ -147,27 +275,21 @@ export function CustomerServiceDemo() {
           </section>
 
           <aside className="cs-sidebar">
-            <section className="cs-panel cs-product">
-              <div className="cs-panel-title"><span>产品预览</span><b>推荐</b></div>
-              <div className="cs-product-visual"><span>MA</span><i>Enterprise</i></div>
-              <h2>Minimum Agent 企业版</h2>
-              <p>适用于需要知识库、会话记忆与安全控制的企业团队。</p>
-              <ul>
-                <li><span>✓</span> 企业知识库问答</li>
-                <li><span>✓</span> 多 Session 记忆隔离</li>
-                <li><span>✓</span> 安全边界与审计</li>
-              </ul>
-              <button type="button" disabled={sending} onClick={() => void sendMessage("帮我推荐适合 1000 人企业的方案")}>咨询企业方案</button>
-            </section>
-
-            <section className="cs-panel">
-              <div className="cs-panel-title"><span>本次会话</span><small>MEMORY ON</small></div>
-              <dl className="cs-facts">
-                <div><dt>当前意图</dt><dd>{intent}</dd></div>
-                <div><dt>知识来源</dt><dd>{knowledgeSource}</dd></div>
-                <div><dt>上下文</dt><dd>{messages.length} 条消息</dd></div>
-              </dl>
-            </section>
+            <KnowledgeBasePanel
+              documentCount={documentCount}
+              embeddingStatus={embeddingStatus}
+              retrieverOnline={retrieverOnline}
+              sourceLabel={knowledgeSource}
+              uploadStatus={uploadStatus}
+              disabled={uploading || sending}
+              onUpload={(file) => void uploadKnowledge(file)}
+            />
+            <MemoryPanel
+              sessionId={activeSessionId}
+              turns={messages.filter((message) => message.role === "user").length}
+              messageCount={messages.length}
+              intent={intent}
+            />
           </aside>
         </div>
       </section>

@@ -113,6 +113,21 @@ class CustomerServiceTests(unittest.TestCase):
     def test_text_upload_extraction(self):
         self.assertEqual(extract_document_text("faq.md", "售后政策".encode()), "售后政策")
 
+    def test_markdown_upload_is_chunked_embedded_and_searchable(self):
+        llm = FakeLLM()
+        agent = CustomerServiceAgent(self.settings, llm, self.store, self.knowledge, FakeDatabase())
+
+        uploaded = agent.upload_knowledge(
+            "企业售后政策.md",
+            "# 售后政策\n\n企业版提供 7×24 小时支持，并支持私有化部署。".encode("utf-8"),
+        )
+        hits = self.knowledge.search("是否支持私有化部署？", llm, limit=3)
+
+        self.assertEqual(uploaded["filename"], "企业售后政策.md")
+        self.assertGreaterEqual(uploaded["chunks"], 1)
+        self.assertEqual(hits[0].filename, "企业售后政策.md")
+        self.assertIn("私有化部署", hits[0].content)
+
 
 class FakeApiAgent:
     def chat(self, message, session_id):

@@ -70,6 +70,8 @@ Invoke-RestMethod http://localhost:8000/chat -Method Post -ContentType "applicat
 
 前端复制 `website/.env.example` 为 `website/.env.local`，把 `NEXT_PUBLIC_AGENT_API_URL` 设置为后端地址。线上 GitHub Pages 在仓库 Variables 中配置同名变量。
 
+智能客服页面的“本次会话”卡片内提供“上传知识库”入口，可直接选择 PDF 或 Markdown 文件。上传成功后页面会显示文件名和切片数量；后续提问自动检索该知识库，并由 LLM 严格根据召回内容作答。
+
 ### 智能客服调用流程
 
 ```mermaid
