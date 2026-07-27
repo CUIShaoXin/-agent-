@@ -7,7 +7,7 @@ interface FlowDiagramProps {
 export function FlowDiagram({ flows }: FlowDiagramProps) {
   return (
     <section className="lesson-module concept-module">
-      <header><div><span>01 / CONCEPT</span><h2>概念流程</h2></div><b>ANIMATED FLOW</b></header>
+      <header><div><span>02 / 可视化流程</span><h2>Agent 流程演示</h2></div><b>ANIMATED FLOW</b></header>
       <div className="concept-flow-grid">
         {flows.map((flow) => (
           <article key={flow.title}>

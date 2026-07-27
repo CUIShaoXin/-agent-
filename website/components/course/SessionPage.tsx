@@ -3,11 +3,9 @@
 import { courseSessions, getCourseSession } from "../../data/sessions";
 import { useCourseProgress } from "../../hooks/useCourseProgress";
 import { courseHref, sessionHref } from "../../lib/hashRouter";
-import { CodePlayground } from "./CodePlayground";
 import { FlowDiagram } from "./FlowDiagram";
 import { ProgressBar } from "./ProgressBar";
 import { Quiz } from "./Quiz";
-import { TraceViewer } from "./TraceViewer";
 
 interface SessionPageProps {
   sessionNumber: number;
@@ -27,6 +25,12 @@ export function SessionPage({ sessionNumber }: SessionPageProps) {
         <a href={courseHref()}>← 课程地图</a>
       </header>
 
+      <section className="session-learning-hero shell">
+        <span>AGENT COURSE / SESSION-{session.number}</span>
+        <h1>六个 Session，边学边构建 Agent</h1>
+        <p>选择章节，从 Agent 基础概念开始，逐步完成一个完整智能 Agent。</p>
+      </section>
+
       <div className="session-learning-layout shell">
         <aside className="session-sidebar">
           <ProgressBar completed={completedCount} compact />
@@ -34,10 +38,15 @@ export function SessionPage({ sessionNumber }: SessionPageProps) {
             {courseSessions.map((item) => (
               <a className={item.number === session.number ? "active" : ""} href={sessionHref(item.number)} key={item.slug}>
                 <span>{String(item.number).padStart(2, "0")}</span>
-                <div><b>{item.title}</b><small>{item.eyebrow}</small></div>
+                <div><b>Session-{item.number} {item.title}</b><small>{item.eyebrow}</small></div>
                 <i>{isCompleted(item.number) ? "✓" : "→"}</i>
               </a>
             ))}
+            <a href="#customer-service">
+              <span>07</span>
+              <div><b>Final Project</b><small>智能客服 Agent</small></div>
+              <i>→</i>
+            </a>
           </nav>
           <a className="session-sidebar-back" href={courseHref()}>← 返回课程地图</a>
         </aside>
@@ -50,15 +59,13 @@ export function SessionPage({ sessionNumber }: SessionPageProps) {
             <div>{session.tags.map((tag) => <b key={tag}>{tag}</b>)}</div>
           </header>
 
-          <section className="learning-objective">
-            <div><span>LEARNING OBJECTIVE</span><h2>本节目标</h2><p>{session.objective}</p></div>
+          <section className="learning-objective session-content-card">
+            <div><span>01 / 教学内容</span><h2>本节目标</h2><p>{session.objective}</p></div>
             <ol>{session.lessons.map((lesson, index) => <li key={lesson}><span>{String(index + 1).padStart(2, "0")}</span>{lesson}</li>)}</ol>
           </section>
 
           <FlowDiagram flows={session.flows} />
           <Quiz quiz={session.quiz} />
-          <CodePlayground code={session.code} result={session.codeResult} />
-          <TraceViewer stages={session.trace} />
 
           <section className={`session-complete-card ${completed ? "completed" : ""}`}>
             <div>

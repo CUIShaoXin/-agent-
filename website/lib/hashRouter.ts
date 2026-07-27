@@ -6,7 +6,7 @@ export type AppRoute =
 
 export function parseHashRoute(hash: string): AppRoute {
   if (hash === "#customer-service") return { page: "customer-service" };
-  if (hash === "#/course" || hash === "#course") return { page: "course" };
+  if (hash === "#agent-course" || hash === "#/course" || hash === "#course") return { page: "course" };
 
   const canonical = hash.match(/^#\/learn\/session-([1-6])$/);
   if (canonical) return { page: "session", sessionNumber: Number(canonical[1]) };
@@ -18,9 +18,9 @@ export function parseHashRoute(hash: string): AppRoute {
 }
 
 export function courseHref() {
-  return "#/course";
+  return "#agent-course";
 }
 
 export function sessionHref(sessionNumber: number) {
-  return `#/learn/session-${sessionNumber}`;
+  return `#session-${sessionNumber}`;
 }

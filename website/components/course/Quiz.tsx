@@ -13,7 +13,7 @@ export function Quiz({ quiz }: QuizProps) {
 
   return (
     <section className="lesson-module quiz-module">
-      <header><div><span>02 / QUIZ</span><h2>快速测验</h2></div><b>CHECK UNDERSTANDING</b></header>
+      <header><div><span>03 / 互动练习</span><h2>快速测验</h2></div><b>CHECK UNDERSTANDING</b></header>
       <p className="quiz-question">{quiz.question}</p>
       <div className="quiz-options">
         {quiz.options.map((option) => (

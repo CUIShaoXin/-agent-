@@ -101,7 +101,7 @@ export default function Home() {
           <span>Minimum Agent Lab</span>
         </a>
         <div className="nav-links">
-          <a href="#learn">学习路径</a>
+          <a href="#agent-course">学习路径</a>
           <a href="#lab">Loop 实验室</a>
           <a href="#code">代码导读</a>
           <AgentProjectsDropdown />
@@ -119,7 +119,7 @@ export default function Home() {
             不依赖 LangGraph 或任何 Agent 框架。从一个可读的 Loop 出发，亲手实现工具调用、Session 记忆、Context 压缩与 Trace。
           </p>
           <div className="hero-actions">
-            <a className="button primary" href="#/course">开始学习 <span>→</span></a>
+            <a className="button primary" href="#agent-course">开始学习 <span>→</span></a>
             <a className="button secondary" href="https://github.com/CUIShaoXin/-agent-" target="_blank" rel="noreferrer">查看源码</a>
           </div>
           <dl className="hero-stats">

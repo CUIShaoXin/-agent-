@@ -15,7 +15,7 @@ export function SessionCard({ session, completed }: SessionCardProps) {
       </div>
       <div className="course-map-symbol"><i /><i /><i /><strong>{String(session.number).padStart(2, "0")}</strong></div>
       <div className="course-map-card-copy">
-        <h2>{session.title}</h2>
+        <h2>Session-{session.number} {session.title}</h2>
         <p>{session.description}</p>
         <div>{session.tags.slice(0, 3).map((tag) => <span key={tag}>{tag}</span>)}</div>
       </div>
