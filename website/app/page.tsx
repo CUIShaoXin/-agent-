@@ -50,7 +50,7 @@ export default function Home() {
   const [activeStep, setActiveStep] = useState(0);
   const [running, setRunning] = useState(false);
   const [activeFile, setActiveFile] = useState("runtime");
-  const [route, setRoute] = useState<AppRoute>({ page: "home" });
+  const [route, setRoute] = useState<AppRoute>({ page: "course" });
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -91,6 +91,10 @@ export default function Home() {
   }
   if (route.page === "session") {
     return <SessionPage sessionNumber={route.sessionNumber} />;
+  }
+
+  if (route.page !== "landing") {
+    return <CourseMapPage />;
   }
 
   return (

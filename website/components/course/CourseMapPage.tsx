@@ -22,9 +22,9 @@ export function CourseMapPage() {
 
       <section className="course-map-hero shell">
         <div>
-          <span className="section-no">LEARNING ROADMAP / 2026</span>
-          <h1>六个 Session，<br /><em>边学边构建 Agent</em></h1>
-          <p>选择章节，从 Agent 基础概念开始，<br />逐步完成一个完整智能 Agent。</p>
+          <span className="section-no">SIX SESSIONS / AGENT COURSE</span>
+          <h1><em>Agent学习路径</em></h1>
+          <p>六个 Session，边学边构建 Agent。<br />选择章节，从基础概念逐步完成一个完整智能 Agent。</p>
           <button className="course-start-button" type="button" onClick={scrollToSessions}>Start Building Agent <span>→</span></button>
         </div>
         <ProgressBar completed={completedCount} />
@@ -32,7 +32,7 @@ export function CourseMapPage() {
 
       <section className="course-map-section shell" id="course-sessions">
         <div className="course-map-section-heading">
-          <div><span>BUILD IN PUBLIC</span><h2>Agent 学习路径</h2></div>
+          <div><span>BUILD IN PUBLIC</span><h2>选择一个 Session 开始学习</h2></div>
           <p>选择一个章节进入课程详情，按顺序完成 Agent 学习路径。</p>
         </div>
         <div className="course-map-grid" aria-label="Agent 学习模块">
