@@ -593,9 +593,9 @@ button { color: inherit; }
   background: #f6f4ef;
 }
 .minimal-entry-grid {
-  width: min(100%,888px);
+  width: min(100%,1346px);
   display: grid;
-  grid-template-columns: repeat(2,minmax(0,430px));
+  grid-template-columns: repeat(3,minmax(0,430px));
   justify-content: center;
   gap: 28px;
 }
@@ -659,6 +659,9 @@ button { color: inherit; }
   .learning-entry-card { padding: 18px; border-radius: 23px; }
   .learning-entry-visual { height: 310px; }
   .learning-entry-card > strong { font-size: 27px; }
+}
+@media (max-width: 1370px) {
+  .minimal-entry-grid { width: min(100%,888px); grid-template-columns: repeat(2,minmax(0,430px)); }
 }
 @media (max-width: 920px) {
   .minimal-entry-grid { width: min(100%,430px); grid-template-columns: 1fr; }

@@ -15,6 +15,13 @@ const entries = [
     image: "/mascot/goudan-codex-card.png",
     alt: "狗蛋正在使用笔记本电脑进行 AI 编程",
   },
+  {
+    title: "深度强化学习规划",
+    button: "查看规划",
+    href: "/rl-planning",
+    image: "/mascot/goudan-rl-planning.png",
+    alt: "狗蛋手持策略地图进行强化学习规划",
+  },
 ];
 
 export function MinimalLearningEntry() {
