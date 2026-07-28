@@ -717,6 +717,8 @@ button { color: inherit; }
 .session-learning-hero > span { color: var(--violet); font: 800 9px var(--font-geist-mono), monospace; letter-spacing: .13em; }
 .session-learning-hero h1 { max-width: 820px; margin: 12px 0 10px; font-size: clamp(40px,5vw,64px); line-height: 1.03; letter-spacing: -.055em; }
 .session-learning-hero p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.75; }
+.session-course-header { grid-template-columns: 1fr auto; }
+.session-course-header > span { justify-self: end; }
 .session-learning-layout { display: grid; grid-template-columns: 220px minmax(0,1fr) 280px; align-items: start; gap: 24px; padding-block: 42px 100px; }
 .session-sidebar { position: sticky; top: 20px; align-self: start; }
 .session-sidebar nav { display: grid; gap: 6px; margin-top: 13px; }
@@ -733,6 +735,7 @@ button { color: inherit; }
 .session-sidebar nav i { color: var(--violet); font-size: 10px; font-style: normal; }
 .session-sidebar-back { display: inline-block; margin: 18px 10px 0; color: #827a87; font-size: 10px; font-weight: 700; }
 .session-learning-content { min-width: 0; }
+.session-learning-single { width: min(calc(100% - 40px),1000px); margin-inline: auto; padding-block: 72px 100px; }
 .session-title-block { padding: 26px 3px 35px; }
 .session-title-block > span { color: var(--violet); font: 800 9px var(--font-geist-mono), monospace; letter-spacing: .13em; }
 .session-title-block h1 { margin: 10px 0 12px; font-size: clamp(48px,6vw,72px); line-height: 1; letter-spacing: -.06em; }
@@ -798,7 +801,9 @@ button { color: inherit; }
 .session-complete-card { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 25px; margin-top: 18px; padding: 28px; border-radius: 21px; background: var(--ink); color: white; }
 .session-complete-card > div > span { color: #a893ff; font: 8px var(--font-geist-mono), monospace; letter-spacing: .12em; }
 .session-complete-card h2 { margin: 7px 0; font-size: 25px; }.session-complete-card p { margin: 0; color: #aaa3ae; font-size: 11px; }
-.session-complete-card button,.session-complete-card > a { min-height: 44px; padding: 0 16px; border: 0; border-radius: 9px; background: var(--violet); color: #fff; cursor: pointer; font-size: 11px; font-weight: 750; display: inline-flex; align-items: center; }
+.session-complete-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 9px; }
+.session-complete-card button,.session-complete-card a { min-height: 44px; padding: 0 16px; border: 0; border-radius: 9px; background: var(--violet); color: #fff; cursor: pointer; font-size: 11px; font-weight: 750; display: inline-flex; align-items: center; }
+.session-complete-card button + a { background: #fff; color: var(--ink); }
 .session-complete-card.completed { background: linear-gradient(135deg,#21332a,#2d6046); }.session-complete-card.completed > div > span { color: #83e0aa; }
 .mini-agent-award { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 15px; margin-top: 14px; padding: 17px; border: 1px solid #cabdf7; border-radius: 15px; background: #f1ecff; }
 .mini-agent-award > span { color: var(--violet); font-size: 24px; }.mini-agent-award div { display: grid; gap: 3px; }.mini-agent-award b { font: 800 10px var(--font-geist-mono), monospace; letter-spacing: .09em; }.mini-agent-award p { margin: 0; color: #746b7b; font-size: 10px; }.mini-agent-award a { color: var(--violet); font-size: 10px; font-weight: 800; }
@@ -839,6 +844,9 @@ button { color: inherit; }
   .course-map-section-heading { align-items: start; flex-direction: column; gap: 12px; }
 }
 @media (max-width: 620px) {
+  .session-course-header { grid-template-columns: 1fr; }
+  .session-course-header > span { display: none; }
+  .session-learning-single { width: min(calc(100% - 28px),1000px); padding-block: 36px 70px; }
   .session-learning-hero { padding-top: 34px; }.session-learning-hero h1 { font-size: 42px; }
   .session-learning-layout { padding-top: 20px; }
   .session-sidebar nav { grid-template-columns: 1fr 1fr; }
@@ -846,6 +854,7 @@ button { color: inherit; }
   .lesson-module,.learning-objective { padding: 19px; }
   .quiz-options { grid-template-columns: 1fr; }
   .session-complete-card { grid-template-columns: 1fr; }
+  .session-complete-actions { justify-content: flex-start; }
   .mini-agent-award { grid-template-columns: auto 1fr; }.mini-agent-award a { grid-column: 1/-1; }
   .concept-flow-steps { align-items: stretch; flex-direction: column; }.concept-flow-step { display: grid; grid-template-columns: 1fr; }.concept-flow-step i { text-align: center; transform: rotate(90deg); }
   .dogdan-teacher-sticky { display: block; padding-bottom: 16px; }

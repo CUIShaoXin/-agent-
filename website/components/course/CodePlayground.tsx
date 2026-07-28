@@ -31,7 +31,7 @@ export function CodePlayground({ code, result }: CodePlaygroundProps) {
 
   return (
     <section className="lesson-module code-playground-module">
-      <header><div><span>03 / CODE PLAYGROUND</span><h2>代码演练</h2></div><button type="button" onClick={run}>▶ 运行示例</button></header>
+      <header><div><span>04 / 代码示例</span><h2>代码演练</h2></div><button type="button" onClick={run}>▶ 运行示例</button></header>
       <div className="playground-grid">
         <div className="playground-code"><div><i /><i /><i /><span>agent.py</span></div><pre><code>{code}</code></pre></div>
         <div className="playground-output" aria-live="polite">
