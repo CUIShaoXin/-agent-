@@ -30,8 +30,8 @@ export function SessionOnePage({ session, completed, completeSession }: SessionO
         <section className="session-one-hero">
           <div className="session-one-hero-copy">
             <span>SESSION-1 / FOUNDATION</span>
-            <h1>和狗蛋一起，<br />认识真正的 <em>Agent</em></h1>
-            <p>从普通 LLM 的一次回答出发，理解 Agent 如何围绕目标思考、行动、观察，并最终完成任务。</p>
+            <h1>Agent基础认知</h1>
+            <p><strong>和狗蛋一起认识真正的 Agent。</strong><br />从普通 LLM 的一次回答出发，理解 Agent 如何围绕目标思考、行动、观察，并最终完成任务。</p>
             <button type="button" onClick={startLearning}>跟狗蛋开始学习 <b>↓</b></button>
           </div>
           <div className="session-one-dogdan-stage">
