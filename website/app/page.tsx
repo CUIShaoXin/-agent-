@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CustomerServiceDemo } from "../components/CustomerServiceDemo";
+import { DogdanCard } from "../components/DogdanCard";
 import { AgentProjectsDropdown } from "../components/Navbar/AgentProjectsDropdown";
 import { LearningPlatform } from "../components/learning/LearningPlatform";
 import { CourseMapPage } from "../components/course/CourseMapPage";
@@ -133,24 +134,7 @@ export default function Home() {
           </dl>
         </div>
 
-        <div className="runtime-card" aria-label="Agent Runtime 架构预览">
-          <div className="runtime-topbar">
-            <div className="window-dots"><i /><i /><i /></div>
-            <span>runtime.py</span>
-            <b>LIVE</b>
-          </div>
-          <div className="runtime-flow">
-            <div className="flow-node user-node"><span>USER</span><strong>“查深圳天气，<br />并记下下班带伞”</strong></div>
-            <div className="flow-connector"><span>context</span></div>
-            <div className="flow-node brain-node"><span>LLM DECISION</span><strong>weather + todo</strong><small>tool_choice: auto</small></div>
-            <div className="tool-row">
-              <div className="mini-tool"><b>☀</b><span>weather</span><small>阵雨 · 31°C</small></div>
-              <div className="mini-tool"><b>✓</b><span>todo</span><small>已添加 #12</small></div>
-            </div>
-            <div className="flow-result"><span className="pulse-dot" /> final_answer ready</div>
-          </div>
-          <div className="runtime-note">A tiny runtime you can read in one sitting.</div>
-        </div>
+        <DogdanCard />
       </section>
 
       <section className="ticker" aria-label="项目能力">

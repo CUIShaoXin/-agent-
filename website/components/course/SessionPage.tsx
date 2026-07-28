@@ -3,6 +3,7 @@
 import { courseSessions, getCourseSession } from "../../data/sessions";
 import { useCourseProgress } from "../../hooks/useCourseProgress";
 import { courseHref, sessionHref } from "../../lib/hashRouter";
+import { DogdanAgent } from "../DogdanAgent";
 import { FlowDiagram } from "./FlowDiagram";
 import { ProgressBar } from "./ProgressBar";
 import { Quiz } from "./Quiz";
@@ -82,6 +83,8 @@ export function SessionPage({ sessionNumber }: SessionPageProps) {
             <section className="mini-agent-award"><span>✦</span><div><b>MINI AGENT BUILDER</b><p>六个 Session 已全部完成。</p></div><a href="#customer-service">开始实战 →</a></section>
           )}
         </article>
+
+        <DogdanAgent completed={completed} key={session.slug} session={session} />
       </div>
     </main>
   );

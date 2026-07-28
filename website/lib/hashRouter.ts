@@ -6,7 +6,7 @@ export type AppRoute =
   | { page: "session"; sessionNumber: number };
 
 export function parseHashRoute(hash: string): AppRoute {
-  if (hash === "#customer-service") return { page: "customer-service" };
+  if (hash === "#customer-service" || hash === "#/customer-service") return { page: "customer-service" };
   if (hash === "#landing") return { page: "landing" };
   if (hash === "" || hash === "#home" || hash === "#agent-course" || hash === "#/course" || hash === "#course") return { page: "course" };
 

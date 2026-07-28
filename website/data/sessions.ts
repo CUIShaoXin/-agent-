@@ -17,6 +17,7 @@ export interface CourseSession {
   title: string;
   eyebrow: string;
   description: string;
+  goudanTip: string;
   objective: string;
   lessons: string[];
   tags: string[];
@@ -35,6 +36,7 @@ export const courseSessions: CourseSession[] = [
     title: "Agent基础认知",
     eyebrow: "FOUNDATION",
     description: "理解 LLM 和 Agent 区别，掌握 Agent 核心组成。",
+    goudanTip: "开始写代码之前，我们先理解：为什么普通 LLM 还不能称为 Agent？",
     objective: "理解为什么普通 LLM 难以独立完成复杂任务，以及 Agent 如何通过规划、行动和反馈持续推进目标。",
     lessons: ["LLM是什么", "Agent是什么", "LLM和Agent区别", "Agent基本组成"],
     tags: ["LLM", "Agent", "Reasoning", "Action"],
@@ -62,6 +64,7 @@ export const courseSessions: CourseSession[] = [
     title: "Agent Loop",
     eyebrow: "THE LOOP",
     description: "学习 Agent 核心循环，理解 Thought、Action、Observation。",
+    goudanTip: "真正的 Agent 不会只回答一次。它会思考、行动、观察，然后继续循环。",
     objective: "掌握 ReAct 思想以及 Agent 如何在最大轮次限制内持续决策，直到得到最终答案。",
     lessons: ["ReAct思想", "Thought", "Action", "Observation", "Agent执行循环"],
     tags: ["ReAct", "Thought", "Observation", "Max Steps"],
@@ -89,6 +92,7 @@ export const courseSessions: CourseSession[] = [
     title: "Tool Calling",
     eyebrow: "TOOLS",
     description: "学习 Function Calling、Tool Schema、工具注册。",
+    goudanTip: "Agent 最大的能力之一，就是通过工具连接外部世界。",
     objective: "理解工具名称、描述、参数 Schema 与执行函数如何组成可被模型自主选择的能力。",
     lessons: ["Function Calling", "MCP", "外部工具调用", "Schema设计"],
     tags: ["Function Calling", "MCP", "JSON Schema", "Registry"],
@@ -116,6 +120,7 @@ export const courseSessions: CourseSession[] = [
     title: "Memory",
     eyebrow: "MEMORY",
     description: "学习 Session Memory、长期记忆、Checkpoint。",
+    goudanTip: "没有记忆的 Agent，无法真正理解用户，也无法延续任务。",
     objective: "掌握用 user_id 与 session_id 隔离会话，并在合适的时间召回短期与长期记忆。",
     lessons: ["短期记忆", "长期记忆", "Session管理", "Redis Checkpoint"],
     tags: ["Session", "Short Memory", "Long Memory", "Checkpoint"],
@@ -143,6 +148,7 @@ export const courseSessions: CourseSession[] = [
     title: "Context Compression",
     eyebrow: "CONTEXT",
     description: "学习 Token限制、历史消息压缩。",
+    goudanTip: "上下文空间有限，优秀的 Agent 必须知道哪些信息应该保留。",
     objective: "在上下文接近限制时压缩旧消息，同时保留任务状态、用户偏好和关键工具结果。",
     lessons: ["Token限制", "历史压缩", "Summary Memory", "信息筛选"],
     tags: ["Token Limit", "Compression", "Summary", "Recall"],
@@ -170,6 +176,7 @@ export const courseSessions: CourseSession[] = [
     title: "Execution Trace",
     eyebrow: "OBSERVABILITY",
     description: "学习 Agent执行轨迹、Debug、状态观察。",
+    goudanTip: "好的 Agent 不只需要运行，还要让我们知道它为什么这样运行。",
     objective: "让每次运行都可以追踪输入、输出、状态、耗时和异常，从而快速定位 Agent 行为问题。",
     lessons: ["Agent运行轨迹", "Debug", "状态观察", "Error Recovery"],
     tags: ["Trace", "Debug", "Status", "Recovery"],
