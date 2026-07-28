@@ -1,26 +1,45 @@
 import Image from "next/image";
 
-const learningPathUrl = "https://cuishaoxin.github.io/-agent-/?v=a26d09d#home";
+const entries = [
+  {
+    title: "Agent学习路径",
+    button: "开始学习",
+    href: "https://cuishaoxin.github.io/-agent-/?v=a26d09d#home",
+    image: "/mascot/goudan-entry.png",
+    alt: "狗蛋，Minimum Agent Lab 的 AI 学习伙伴",
+  },
+  {
+    title: "GPT/Codex购买入口",
+    button: "立即购买",
+    href: "https://pay.ldxp.cn/item/1vym1h",
+    image: "/mascot/goudan-codex-card.png",
+    alt: "狗蛋正在使用笔记本电脑进行 AI 编程",
+  },
+];
 
 export function MinimalLearningEntry() {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
   return (
     <main className="minimal-entry-page">
-      <a className="learning-entry-card" href={learningPathUrl} aria-label="进入 Agent 学习路径">
-        <span className="learning-entry-visual">
-          <Image
-            alt="狗蛋，Minimum Agent Lab 的 AI 学习伙伴"
-            className="learning-entry-dogdan"
-            height={1254}
-            priority
-            src={`${basePath}/mascot/goudan-entry.png`}
-            width={1254}
-          />
-        </span>
-        <strong>Agent学习路径</strong>
-        <span className="learning-entry-button">开始学习 <b>→</b></span>
-      </a>
+      <div className="minimal-entry-grid">
+        {entries.map((entry, index) => (
+          <a className="learning-entry-card" href={entry.href} aria-label={entry.title} key={entry.title}>
+            <span className="learning-entry-visual">
+              <Image
+                alt={entry.alt}
+                className="learning-entry-dogdan"
+                height={1254}
+                priority={index === 0}
+                src={`${basePath}${entry.image}`}
+                width={1254}
+              />
+            </span>
+            <strong>{entry.title}</strong>
+            <span className="learning-entry-button">{entry.button} <b>→</b></span>
+          </a>
+        ))}
+      </div>
     </main>
   );
 }

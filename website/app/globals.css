@@ -592,8 +592,15 @@ button { color: inherit; }
   padding: 32px;
   background: #f6f4ef;
 }
+.minimal-entry-grid {
+  width: min(100%,888px);
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,430px));
+  justify-content: center;
+  gap: 28px;
+}
 .learning-entry-card {
-  width: min(100%,430px);
+  width: 100%;
   display: grid;
   gap: 24px;
   padding: 24px;
@@ -652,6 +659,9 @@ button { color: inherit; }
   .learning-entry-card { padding: 18px; border-radius: 23px; }
   .learning-entry-visual { height: 310px; }
   .learning-entry-card > strong { font-size: 27px; }
+}
+@media (max-width: 920px) {
+  .minimal-entry-grid { width: min(100%,430px); grid-template-columns: 1fr; }
 }
 
 /* Course map */
