@@ -712,7 +712,7 @@ button { color: inherit; }
 }
 .course-map-card {
   position: relative;
-  min-height: 210px;
+  min-height: 260px;
   display: grid;
   grid-template-columns: 142px minmax(0, 1fr) 135px;
   grid-template-rows: auto 1fr;
@@ -736,7 +736,7 @@ button { color: inherit; }
   background: #f8f5ef;
   color: var(--violet);
   box-shadow: 0 0 0 7px #f8f5ef;
-  font: 800 11px var(--font-geist-mono), monospace;
+  font: 600 22px var(--font-geist-mono), monospace;
   letter-spacing: .08em;
 }
 .course-map-card:hover { transform: translateY(-5px); border-color: #b9acec; box-shadow: 0 25px 55px rgba(23,21,29,.1); }
@@ -748,16 +748,16 @@ button { color: inherit; }
 .course-map-card.orange .course-map-symbol { background: #ffe4d7; }.course-map-card.blue .course-map-symbol { background: #ddecfa; }.course-map-card.green .course-map-symbol { background: #daf1e6; }.course-map-card.rose .course-map-symbol { background: #f8dfe5; }.course-map-card.indigo .course-map-symbol { background: #e1e2fa; }
 .course-map-symbol i { position: absolute; z-index: 1; width: 53px; height: 53px; border: 1px solid rgba(74,51,174,.28); border-radius: 16px; transform: rotate(12deg); }
 .course-map-symbol i:nth-child(2) { width: 76px; height: 76px; transform: rotate(31deg); opacity: .65; }.course-map-symbol i:nth-child(3) { width: 98px; height: 98px; transform: rotate(50deg); opacity: .35; }
-.course-map-symbol strong { position: relative; z-index: 2; color: #533bbd; font: 800 18px var(--font-geist-mono), monospace; }
+.course-map-symbol strong { position: relative; z-index: 2; color: #533bbd; font: 600 22px var(--font-geist-mono), monospace; }
 .course-map-card-copy { grid-column: 2; grid-row: 2; align-self: center; padding: 20px 24px; }
-.course-map-card-copy h2 { margin: 0; font-size: 21px; letter-spacing: -.035em; }
-.course-map-card-copy p { margin: 9px 0 14px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.course-map-card-copy h2 { margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -.035em; }
+.course-map-card-copy p { margin: 9px 0 14px; color: var(--muted); font-size: 16px; line-height: 1.8; }
 .course-map-card-copy > div { display: flex; flex-wrap: wrap; gap: 6px; }
-.course-map-card-copy > div span { padding: 5px 7px; border-radius: 999px; background: #f1eef4; color: #6d6672; font: 8px var(--font-geist-mono), monospace; }
+.course-map-card-copy > div:not(.dogdan-message) span { padding: 6px 14px; border-radius: 999px; background: #f1eef4; color: #6d6672; font: 13px var(--font-geist-mono), monospace; }
 .course-map-card-copy > .dogdan-message { display: block; margin-top: 14px; border-color: #ddd5f6; background: #f8f5ff; }
 .course-map-card-copy > .dogdan-message > span { padding: 0; background: transparent; color: var(--violet); }
 .course-map-card-copy > .dogdan-message p { margin: 0; min-height: 0; font-size: 10px; line-height: 1.65; }
-.course-map-card footer { grid-column: 3; grid-row: 2; display: flex; align-items: center; justify-content: space-between; padding: 20px; border-left: 1px solid #e8e4eb; font-size: 11px; font-weight: 750; }
+.course-map-card footer { grid-column: 3; grid-row: 2; display: flex; align-items: center; justify-content: space-between; padding: 20px; border-left: 1px solid #e8e4eb; font-size: 16px; font-weight: 600; }
 .course-map-card footer b { color: var(--violet); font-size: 17px; }
 .course-final { position: relative; overflow: hidden; display: grid; grid-template-columns: 1fr auto; gap: 28px; margin-block: 35px 85px; padding: 38px; border-radius: 24px; background: #211a2c; color: white; }
 .course-final::after { content: ""; position: absolute; width: 300px; height: 300px; right: -100px; top: -140px; border-radius: 50%; background: var(--violet); filter: blur(80px); opacity: .46; }
@@ -790,7 +790,7 @@ button { color: inherit; }
 .course-map-section { padding-top: 28px; scroll-margin-top: 20px; }
 .course-map-section-heading { display: flex; align-items: end; justify-content: space-between; gap: 40px; margin-bottom: 25px; }
 .course-map-section-heading span { color: var(--violet); font: 800 9px var(--font-geist-mono), monospace; letter-spacing: .13em; }
-.course-map-section-heading h2 { margin: 8px 0 0; font-size: 34px; letter-spacing: -.045em; }
+.course-map-section-heading h2 { margin: 8px 0 0; font-size: 42px; font-weight: 600; letter-spacing: -.045em; }
 .course-map-section-heading p { max-width: 410px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
 .course-map-card-top b { color: #8f8599; font-size: 8px; letter-spacing: .06em; }
 .course-final.completed { background: linear-gradient(135deg,#211a2c,#443179); }
@@ -1074,11 +1074,11 @@ button { color: inherit; }
   .course-map-grid { width: calc(100% - 50px); margin-left: 50px; gap: 22px; }
   .course-map-grid::before { left: -30px; }
   .session-frame-grid { grid-template-columns: 1fr; }
-  .course-map-card { min-height: 0; grid-template-columns: 94px minmax(0,1fr); grid-template-rows: auto auto auto; }
+  .course-map-card { min-height: 260px; grid-template-columns: 94px minmax(0,1fr); grid-template-rows: auto auto auto; }
   .course-map-card::before { top: 22px; left: -50px; width: 36px; height: 36px; border-radius: 11px; }
   .course-map-symbol { grid-column: 1; grid-row: 2; min-height: 138px; border-radius: 0; }
   .course-map-card-copy { grid-column: 2; grid-row: 2; padding: 18px; }
-  .course-map-card-copy h2 { font-size: 18px; }
+  .course-map-card-copy h2 { font-size: 26px; }
   .course-map-card footer { grid-column: 1/-1; grid-row: 3; padding: 13px 18px; border-top: 1px solid #e8e4eb; border-left: 0; }
   .dogdan-welcome { grid-template-columns: 1fr; gap: 5px; padding: 20px; text-align: center; }
   .dogdan-welcome .dogdan-avatar { margin: -25px auto -12px; }
