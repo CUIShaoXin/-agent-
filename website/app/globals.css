@@ -800,6 +800,30 @@ button { color: inherit; }
 .session-one-page .playground-output { min-height: 369px; padding: 22px; }
 .session-one-page .playground-output > span { font-size: 10px; }
 .session-one-page .playground-output p { padding: 12px; font-size: 14px; }
+.interactive-core-section { padding: 50px 0 18px; }
+.interactive-core-section > header { display: block; margin-bottom: 28px; }
+.interactive-core-section > header span { color: var(--violet); font: 800 11px var(--font-geist-mono),monospace; letter-spacing: .12em; }
+.interactive-core-section > header h2 { margin: 8px 0 0; font-size: 36px; letter-spacing: -.045em; }
+.session-one-concept-grid.concept-count-5 { grid-template-columns: repeat(3,1fr); }
+.session-one-concept-grid.concept-count-5 article:nth-child(n+4) { grid-column: span 1; }
+.interactive-flow-section .lesson-module { margin-top: 28px; }
+.interactive-session-page .concept-flow-grid { gap: 16px; }
+.interactive-session-page .concept-flow-grid article { min-height: 230px; padding: 26px; border-radius: 17px; }
+.interactive-session-page .concept-flow-grid h3 { margin-bottom: 26px; font-size: 24px; }
+.interactive-session-page .concept-flow-grid article > p { margin-top: 24px; font-size: 15px; line-height: 1.7; }
+.interactive-session-page .concept-flow-steps { gap: 9px; }
+.interactive-session-page .concept-flow-step { gap: 9px; }
+.interactive-session-page .concept-flow-step span { padding: 13px 15px; border-radius: 9px; font-size: 13px; }
+.interactive-session-page .concept-flow-step i { font-size: 16px; }
+.interactive-experiment-intro,.interactive-challenge-intro { display: grid; grid-template-columns: 72px 1fr; align-items: center; gap: 16px; margin-top: 44px; padding: 18px 22px; border: 1px solid #d8d0ed; border-radius: 18px; background: linear-gradient(135deg,rgba(255,255,255,.86),rgba(241,236,255,.78)); }
+.interactive-experiment-intro + .lesson-module,.interactive-challenge-intro + .lesson-module { margin-top: 14px; }
+.interactive-experiment-intro .dogdan-message,.interactive-challenge-intro .dogdan-message { box-shadow: none; }
+.interactive-session-page .session-one-dogdan-stage::before { content: "GOUDAN · AI AGENT LEARNING PARTNER"; }
+.session-accent-orange .session-one-dogdan-stage { background: radial-gradient(circle at 50% 38%,rgba(255,145,83,.22),transparent 31%),linear-gradient(145deg,#2a1f3c,#593153); }
+.session-accent-blue .session-one-dogdan-stage { background: radial-gradient(circle at 50% 38%,rgba(87,157,255,.25),transparent 31%),linear-gradient(145deg,#1d283e,#334c77); }
+.session-accent-green .session-one-dogdan-stage { background: radial-gradient(circle at 50% 38%,rgba(81,211,151,.22),transparent 31%),linear-gradient(145deg,#1e302b,#315f50); }
+.session-accent-rose .session-one-dogdan-stage { background: radial-gradient(circle at 50% 38%,rgba(235,112,155,.23),transparent 31%),linear-gradient(145deg,#342332,#673c58); }
+.session-accent-indigo .session-one-dogdan-stage { background: radial-gradient(circle at 50% 38%,rgba(112,120,255,.25),transparent 31%),linear-gradient(145deg,#20223d,#3c417a); }
 .session-title-block { padding: 26px 3px 35px; }
 .session-title-block > span { color: var(--violet); font: 800 9px var(--font-geist-mono), monospace; letter-spacing: .13em; }
 .session-title-block h1 { margin: 10px 0 12px; font-size: clamp(48px,6vw,72px); line-height: 1; letter-spacing: -.06em; }
@@ -904,6 +928,7 @@ button { color: inherit; }
   .session-one-foundation > header { grid-template-columns: 1fr; }
   .session-one-foundation > header > span { grid-column: auto; }
   .session-one-concept-grid { grid-template-columns: 1fr 1fr; }
+  .session-one-concept-grid.concept-count-5 { grid-template-columns: 1fr 1fr; }
   .session-learning-layout { grid-template-columns: 1fr; gap: 18px; }
   .session-sidebar { position: static; grid-row: auto; }
   .dogdan-teacher { grid-column: auto; }
@@ -921,6 +946,9 @@ button { color: inherit; }
   .session-one-foundation { padding-top: 48px; }
   .session-one-foundation h2 { font-size: 32px; }
   .session-one-concept-grid,.session-one-compare-grid { grid-template-columns: 1fr; }
+  .session-one-concept-grid.concept-count-5 { grid-template-columns: 1fr; }
+  .interactive-experiment-intro,.interactive-challenge-intro { grid-template-columns: 58px 1fr; padding: 15px; }
+  .interactive-experiment-intro .dogdan-avatar,.interactive-challenge-intro .dogdan-avatar { width: 58px; height: 58px; }
   .session-one-page .lesson-module { padding: 24px; }
   .session-one-page .lesson-module > header h2 { font-size: 32px; }
   .session-one-concept-grid article { min-height: 220px; }

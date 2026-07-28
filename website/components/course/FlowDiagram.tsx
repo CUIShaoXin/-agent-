@@ -2,12 +2,14 @@ import type { CourseFlow } from "../../data/sessions";
 
 interface FlowDiagramProps {
   flows: CourseFlow[];
+  eyebrow?: string;
+  title?: string;
 }
 
-export function FlowDiagram({ flows }: FlowDiagramProps) {
+export function FlowDiagram({ flows, eyebrow = "02 / 可视化流程", title = "Agent 流程演示" }: FlowDiagramProps) {
   return (
     <section className="lesson-module concept-module">
-      <header><div><span>02 / 可视化流程</span><h2>Agent 流程演示</h2></div><b>ANIMATED FLOW</b></header>
+      <header><div><span>{eyebrow}</span><h2>{title}</h2></div><b>ANIMATED FLOW</b></header>
       <div className="concept-flow-grid">
         {flows.map((flow) => (
           <article key={flow.title}>
