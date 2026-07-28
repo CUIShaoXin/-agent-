@@ -5,15 +5,17 @@ import type { CourseQuiz } from "../../data/sessions";
 
 interface QuizProps {
   quiz: CourseQuiz;
+  eyebrow?: string;
+  title?: string;
 }
 
-export function Quiz({ quiz }: QuizProps) {
+export function Quiz({ quiz, eyebrow = "03 / 互动练习", title = "快速测验" }: QuizProps) {
   const [answer, setAnswer] = useState<"a" | "b" | null>(null);
   const correct = answer === quiz.answer;
 
   return (
     <section className="lesson-module quiz-module">
-      <header><div><span>03 / 互动练习</span><h2>快速测验</h2></div><b>CHECK UNDERSTANDING</b></header>
+      <header><div><span>{eyebrow}</span><h2>{title}</h2></div><b>CHECK UNDERSTANDING</b></header>
       <p className="quiz-question">{quiz.question}</p>
       <div className="quiz-options">
         {quiz.options.map((option) => (

@@ -6,6 +6,7 @@ import { sessionHref } from "../../lib/hashRouter";
 import { CodePlayground } from "./CodePlayground";
 import { FlowDiagram } from "./FlowDiagram";
 import { Quiz } from "./Quiz";
+import { SessionOnePage } from "./SessionOnePage";
 
 interface SessionPageProps {
   sessionNumber: number;
@@ -16,6 +17,10 @@ export function SessionPage({ sessionNumber }: SessionPageProps) {
   const { completedCount, completeSession, isCompleted } = useCourseProgress();
   const completed = isCompleted(session.number);
   const nextSession = session.number < courseSessions.length ? session.number + 1 : null;
+
+  if (session.number === 1) {
+    return <SessionOnePage completed={completed} completeSession={completeSession} session={session} />;
+  }
 
   return (
     <main className="session-learning-page">
