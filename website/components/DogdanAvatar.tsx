@@ -16,6 +16,8 @@ const emotionLabels: Record<DogdanEmotion, string> = {
 };
 
 export function DogdanAvatar({ emotion = "idle", size = "medium", label }: DogdanAvatarProps) {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
   return (
     <div className={`dogdan-avatar ${size}`} data-emotion={emotion} aria-label={label ?? emotionLabels[emotion]}>
       <span className="dogdan-avatar-aura" aria-hidden="true" />
@@ -24,7 +26,7 @@ export function DogdanAvatar({ emotion = "idle", size = "medium", label }: Dogda
         className="dogdan-avatar-image"
         height={520}
         priority={size === "large"}
-        src="/mascot/goudan-agent.png"
+        src={`${basePath}/mascot/goudan-agent.png`}
         width={520}
       />
       <span className="dogdan-emotion-mark" aria-hidden="true">
