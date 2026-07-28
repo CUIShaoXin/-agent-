@@ -584,6 +584,76 @@ button { color: inherit; }
 .footer .brand { color: var(--ink); }.footer .brand-mark { width: 29px; height: 29px; font-size: 9px; }
 .footer a { color: var(--violet); font-weight: 700; }
 
+/* Minimal learning path entry */
+.minimal-entry-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  background: #f6f4ef;
+}
+.learning-entry-card {
+  width: min(100%,430px);
+  display: grid;
+  gap: 24px;
+  padding: 24px;
+  border: 1px solid #e5e1da;
+  border-radius: 28px;
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 18px 48px rgba(31,25,39,.08);
+  transition: transform 220ms ease,box-shadow 220ms ease,border-color 220ms ease;
+}
+.learning-entry-card:hover {
+  transform: translateY(-8px);
+  border-color: #d8d0ed;
+  box-shadow: 0 30px 72px rgba(31,25,39,.16);
+}
+.learning-entry-visual {
+  height: 360px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 22px;
+  background: linear-gradient(145deg,#faf9f6,#f0ecfa);
+}
+.learning-entry-dogdan {
+  width: 94%;
+  height: 94%;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 22px rgba(33,25,45,.14));
+  transition: transform 280ms cubic-bezier(.2,.75,.2,1);
+}
+.learning-entry-card:hover .learning-entry-dogdan { transform: scale(1.055); }
+.learning-entry-card > strong {
+  display: block;
+  padding-inline: 4px;
+  font-size: 30px;
+  letter-spacing: -.045em;
+}
+.learning-entry-button {
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 19px;
+  border-radius: 13px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 750;
+  transition: background 180ms ease;
+}
+.learning-entry-card:hover .learning-entry-button { background: var(--violet); }
+.learning-entry-button b { font-size: 18px; font-weight: 500; }
+
+@media (max-width: 520px) {
+  .minimal-entry-page { padding: 18px; }
+  .learning-entry-card { padding: 18px; border-radius: 23px; }
+  .learning-entry-visual { height: 310px; }
+  .learning-entry-card > strong { font-size: 27px; }
+}
+
 /* Course map */
 .course-map-page, .session-frame-page { min-height: 100vh; color: var(--ink); }
 .course-map-header {
