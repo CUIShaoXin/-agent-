@@ -18,7 +18,7 @@ const entries = [
   {
     title: "深度强化学习规划",
     button: "查看规划",
-    href: "/rl-planning",
+   href: "./rl-planning.html",
     image: "/mascot/goudan-rl-planning.png",
     alt: "狗蛋手持策略地图进行强化学习规划",
   },
