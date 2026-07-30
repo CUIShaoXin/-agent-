@@ -145,10 +145,13 @@
   .milestone strong { display: block; color: var(--green); }
 
   .resource-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
-  .resource-card { min-height: 190px; display: flex; flex-direction: column; box-shadow: none; border-top: 2px solid #31596c; }
+  .resource-card { min-height: 290px; display: flex; flex-direction: column; box-shadow: none; border-top: 2px solid #31596c; }
   .book-no { color: var(--faint); font: 700 .7rem var(--mono); }
-  .resource-card h3 { margin: 12px 0 7px; font-size: .92rem; line-height: 1.45; overflow-wrap: anywhere; }
-  .resource-card p { margin: 0; color: var(--muted); font-size: .75rem; }
+  .resource-card h3 { margin: 12px 0 10px; font-size: .92rem; line-height: 1.45; overflow-wrap: anywhere; }
+  .book-meta { display: grid; gap: 9px; margin: 0; }
+  .book-meta div { padding-top: 8px; border-top: 1px solid var(--line); }
+  .book-meta dt { margin-bottom: 3px; color: var(--faint); font: 700 .67rem var(--mono); }
+  .book-meta dd { margin: 0; color: var(--muted); font-size: .73rem; line-height: 1.55; overflow-wrap: anywhere; }
   .resource-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: auto; padding-top: 14px; }
   .link-button, .button {
     display: inline-flex;
@@ -165,7 +168,6 @@
     font-size: .75rem;
   }
   .link-button:hover, .button:hover { border-color: var(--cyan); color: var(--cyan); }
-  .offline-label { display: inline-flex; align-items: center; min-height: 34px; padding: 7px 10px; border: 1px dashed #3b5665; border-radius: 4px; color: var(--faint); font-size: .75rem; cursor: default; }
   .button.primary { background: var(--cyan); border-color: var(--cyan); color: #071923; font-weight: 800; }
   .button.danger:hover { border-color: var(--coral); color: var(--coral); }
   .copyright-note { margin: 10px 0 0; color: var(--faint); font-size: .72rem; }
@@ -398,46 +400,56 @@
 
     <section class="section" id="resources">
       <div class="section-heading">
-        <h2>三、核心书目与链接</h2>
-        <p>本地链接适合当前电脑使用；上传 GitHub 后，只有随仓库发布且路径不变的文件才能继续访问。</p>
+        <h2>三、核心书目</h2>
       </div>
       <div class="resource-grid">
         <article class="resource-card">
           <span class="book-no">BOOK 01 · 原理</span>
           <h3>《深度学习的数学》</h3>
-          <p>第 1-7 天。只学原理与推导，跳过所有 Excel 实现。</p>
-          <div class="resource-actions"><span class="offline-label">PDF 仅离线使用</span></div>
+          <dl class="book-meta">
+            <div><dt>作者 / 译者</dt><dd>[日] 涌井良幸、涌井贞美；杨瑞龙译</dd></div>
+            <div><dt>出版信息</dt><dd>人民邮电出版社 · 242 页</dd></div>
+            <div><dt>核心内容</dt><dd>神经网络、代价函数、梯度下降、反向传播与卷积的数学原理。</dd></div>
+          </dl>
         </article>
         <article class="resource-card">
           <span class="book-no">BOOK 02 · 工具</span>
           <h3>《动手学深度学习 PyTorch 版》第二版</h3>
-          <p>第 8-30 天。聚焦第 2-6 章和 MNIST，不深入网络结构大全。</p>
-          <div class="resource-actions">
-            <a class="link-button" href="https://zh.d2l.ai/" target="_blank" rel="noopener">在线版</a>
-          </div>
+          <dl class="book-meta">
+            <div><dt>作者</dt><dd>Aston Zhang、Zachary C. Lipton、Mu Li、Alexander J. Smola</dd></div>
+            <div><dt>版本信息</dt><dd>第二版 · 797 页</dd></div>
+            <div><dt>核心内容</dt><dd>Tensor、自动微分、线性模型、多层感知机、卷积网络与 PyTorch 实践。</dd></div>
+          </dl>
         </article>
         <article class="resource-card">
           <span class="book-no">BOOK 03 · 数学建模</span>
           <h3>Linear Programming and Algorithms for Communication Networks</h3>
-          <p>90 天并行精学。第 63 天完成第 4.3 节及核心算法，第 70 天完成第 4.4 节与总验收。</p>
-          <div class="resource-actions"><span class="offline-label">PDF 仅离线使用</span></div>
+          <dl class="book-meta">
+            <div><dt>作者</dt><dd>Eiji Oki</dd></div>
+            <div><dt>副标题</dt><dd>A Practical Guide to Network Design, Control, and Management</dd></div>
+            <div><dt>版本信息</dt><dd>英文版 · 208 页</dd></div>
+            <div><dt>核心内容</dt><dd>线性规划建模、单纯形法、整数规划及通信网络设计与控制算法。</dd></div>
+          </dl>
         </article>
         <article class="resource-card">
           <span class="book-no">BOOK 04 · DRL 实践</span>
           <h3>《边做边学深度强化学习：PyTorch 程序设计实践》</h3>
-          <p>第 31-90 天。用于代码直觉、DQN 与 Actor-Critic 实践。</p>
-          <div class="resource-actions"><span class="offline-label">PDF 仅离线使用</span></div>
+          <dl class="book-meta">
+            <div><dt>作者</dt><dd>[日] 小川雄太郎</dd></div>
+            <div><dt>版本信息</dt><dd>PyTorch 程序设计实践 · 231 页</dd></div>
+            <div><dt>核心内容</dt><dd>MDP、DQN、Double DQN、Dueling DQN 与 Actor-Critic 的代码实现。</dd></div>
+          </dl>
         </article>
         <article class="resource-card">
           <span class="book-no">BOOK 05 · DRL 理论</span>
-          <h3>EasyRL</h3>
-          <p>与实践书交叉阅读，同一算法至少经历“读懂、实现、复盘”三遍。</p>
-          <div class="resource-actions">
-            <a class="link-button" href="https://github.com/datawhalechina/easy-rl" target="_blank" rel="noopener">项目主页</a>
-          </div>
+          <h3>《蘑菇书 EasyRL》</h3>
+          <dl class="book-meta">
+            <div><dt>作者</dt><dd>Qi Wang、Yiyuan Yang、Ji Jiang</dd></div>
+            <div><dt>版本信息</dt><dd>Datawhale · v1.0.6 · 2023-07-25 · 189 页</dd></div>
+            <div><dt>核心内容</dt><dd>MDP、Bellman 方程、动态规划、时序差分、Q-Learning、策略梯度与 PPO。</dd></div>
+          </dl>
         </article>
       </div>
-      <p class="copyright-note">发布版不包含书籍 PDF。请通过合法渠道自行准备学习资料；在线页面仅保留公开可访问的项目与教材链接。</p>
     </section>
 
     <section class="section" id="daily-plan">
