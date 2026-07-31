@@ -37,6 +37,7 @@ const courses = [
 
 export default function VibeCodingPage() {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+  const lessonOneHref = `${basePath}/vibe-coding/phase-one/lesson-1/`;
 
   return (
     <main className="vibe-course-page">
@@ -123,7 +124,7 @@ export default function VibeCodingPage() {
               <span>第一期 · 零基础上手</span>
               <h1>做一个能发给朋友的<br /><em>小网站</em></h1>
               <p>不背术语，不先学一整套代码。跟着狗蛋用 AI 编程工具，把一个小想法变成真正能打开、能分享的网页。</p>
-              <a href="#phase-one-map">从第 1 课开始 <b>→</b></a>
+              <a href={lessonOneHref}>从第 1 课开始 <b>→</b></a>
               <small>约 30 分钟入门 · 需要一台电脑 · Windows / macOS 都可以</small>
             </div>
             <figure>
@@ -150,7 +151,7 @@ export default function VibeCodingPage() {
               <article><span>🍔</span><h3>今天吃什么</h3><p>点一下，帮选择困难症随机决定菜单。</p><a href="#phase-one-map">怎么玩 →</a></article>
               <article><span>🌍</span><h3>世界灵感地图</h3><p>点击城市，发现一道当地美食或新鲜事。</p><a href="#phase-one-map">怎么玩 →</a></article>
             </div>
-            <a className="vibe-phase-start" href="#phase-one-map">▶ 从第 1 课开始，自己做一个</a>
+            <a className="vibe-phase-start" href={lessonOneHref}>▶ 从第 1 课开始，自己做一个</a>
           </section>
 
           <section className="vibe-phase-outcome">
@@ -201,7 +202,7 @@ export default function VibeCodingPage() {
               <h2>从第一行提示词，到第一个公开链接</h2>
             </div>
             <div className="vibe-phase-lessons">
-              <article><span>第 1 课 · 周六 ①</span><h3>🐣 快速入门：做出第一个网页</h3><p>只打字、不写代码，做出第一个能在电脑上打开的网页，约 30 分钟。</p><a href="#phase-one-map">进入第 1 课 →</a></article>
+              <article><span>第 1 课 · 周六 ①</span><h3>🐣 快速入门：做出第一个网页</h3><p>只打字、不写代码，做出第一个能在电脑上打开的网页，约 30 分钟。</p><a href={lessonOneHref}>进入第 1 课 →</a></article>
               <article><span>第 2 课 · 周日 ①</span><h3>🔎 找到一个真问题</h3><p>不碰代码，用“六个一”框架找到真正值得做、你也做得到的问题。</p><a href="#phase-one-map">进入第 2 课 →</a></article>
               <article className="vibe-phase-project"><span>课间选修 · 学完前两课</span><h3>🏠 做一个自己的个人主页</h3><p>用 AI 编程工具做一个公开的个人主页，练习把内容组织成能被别人看懂的作品。</p><a href="#phase-one-map">进入课间选修 →</a></article>
               <article><span>第 3 课 · 周六 ②</span><h3>🛠️ 做一个真能用的 AI 工具</h3><p>把问题卡做成会调用 AI、能处理失败、被真实样本验证过的小应用。</p><a href="#phase-one-map">进入第 3 课 →</a></article>
