@@ -39,6 +39,7 @@ export function MinimalLearningEntry() {
                 height={1254}
                 priority={index === 0}
                 src={`${basePath}${entry.image}`}
+                unoptimized
                 width={1254}
               />
             </span>

@@ -89,13 +89,21 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     def health() -> dict[str, Any]:
         if not resolved.dashscope_api_key:
             return {
-                "status": "not_ready",
+                "status": "offline",
+                "service": "clothing-company-agent",
+                "knowledge_base": "unavailable",
                 "llm_configured": False,
                 "embedding_configured": bool(resolved.dashscope_api_key),
                 "mysql_configured": resolved.mysql_configured,
                 "knowledge_documents": 0,
             }
-        return {"status": "ok", **get_agent().health()}
+        details = get_agent().health()
+        return {
+            "status": "online",
+            "service": "clothing-company-agent",
+            "knowledge_base": "ready",
+            **details,
+        }
 
     @app.post("/chat", response_model=ChatResponse)
     def chat(payload: ChatRequest) -> ChatResponse:

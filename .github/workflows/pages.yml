@@ -34,7 +34,7 @@ jobs:
       - run: npm run build:pages
         env:
           NEXT_PUBLIC_SITE_URL: https://cuishaoxin.github.io/-agent-/
-          NEXT_PUBLIC_AGENT_API_URL: ${{ vars.NEXT_PUBLIC_AGENT_API_URL }}
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: website/out
