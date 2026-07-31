@@ -21,6 +21,24 @@ class KnowledgeHit:
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
+def load_vectorstore(settings: Settings) -> tuple[KnowledgeBuilder, Chroma]:
+    """Load an existing Chroma collection without rebuilding source documents."""
+    chroma_path = Path(settings.chroma_db_path).expanduser()
+    sqlite_path = chroma_path / "chroma.sqlite3"
+    if not sqlite_path.is_file():
+        raise FileNotFoundError(
+            f"Knowledge base not found at {chroma_path}. "
+            "Please run 'build-knowledge --rebuild' first."
+        )
+    builder = KnowledgeBuilder.from_settings(settings)
+    try:
+        vector_store = builder.ensure_vector_store(auto_build=False)
+    except Exception:
+        builder.close()
+        raise
+    return builder, vector_store
+
+
 def extract_document_text(filename: str, data: bytes) -> str:
     """Backward-compatible text extraction helper for callers outside the builder."""
     suffix = Path(filename).suffix.lower()
@@ -61,8 +79,11 @@ class ChromaKnowledgeBase:
 
     @classmethod
     def from_settings(cls, settings: Settings) -> "ChromaKnowledgeBase":
-        builder = KnowledgeBuilder.from_settings(settings)
-        vector_store = builder.ensure_vector_store(auto_build=settings.knowledge_auto_build)
+        if settings.knowledge_auto_build:
+            builder = KnowledgeBuilder.from_settings(settings)
+            vector_store = builder.ensure_vector_store(auto_build=True)
+        else:
+            builder, vector_store = load_vectorstore(settings)
         return cls(builder, vector_store, top_k=settings.rag_top_k)
 
     @staticmethod
@@ -77,19 +98,28 @@ class ChromaKnowledgeBase:
         )
         return hashlib.sha256(identity.encode("utf-8")).hexdigest()
 
-    def search(self, query: str, limit: int | None = None) -> list[KnowledgeHit]:
+    def search(
+        self,
+        query: str,
+        limit: int | None = None,
+        min_score: float = 0.0,
+    ) -> list[KnowledgeHit]:
         resolved_limit = limit or self.top_k
         matches = self.vector_store.similarity_search_with_score(query, k=resolved_limit)
         hits: list[KnowledgeHit] = []
         for document, distance in matches:
             metadata = dict(document.metadata)
             filename = str(metadata.get("source", "unknown"))
+            # The collection uses cosine distance, so relevance is 1 - distance.
+            score = max(0.0, min(1.0, 1.0 - float(distance)))
+            if score < min_score:
+                continue
             hits.append(
                 KnowledgeHit(
                     document_id=self._document_id(filename, document.page_content, metadata),
                     filename=filename,
                     content=document.page_content,
-                    score=1.0 / (1.0 + max(0.0, float(distance))),
+                    score=score,
                     metadata=metadata,
                 )
             )

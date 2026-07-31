@@ -20,6 +20,7 @@ def settings_for(folder: str, **overrides) -> Settings:
         "embedding_model": "test-embedding",
         "dashscope_api_key": "test-dashscope-key",
         "dashscope_embedding_model": "text-embedding-v3",
+        "dashscope_chat_model": "qwen-plus",
         "agent_db_path": str(Path(folder) / "agent.db"),
         "knowledge_db_path": str(Path(folder) / "knowledge.db"),
         "knowledge_source_dir": str(Path(folder) / "source"),
@@ -31,6 +32,7 @@ def settings_for(folder: str, **overrides) -> Settings:
         "knowledge_auto_build": True,
         "context_messages": 12,
         "rag_top_k": 3,
+        "rag_min_score": 0.45,
         "mysql_host": "",
         "mysql_port": 3306,
         "mysql_user": "",
@@ -88,7 +90,7 @@ class FakeKnowledgeBase:
         self.documents = [(filename, content)]
         return {"document_id": "fake-doc", "filename": filename, "chunks": 1}
 
-    def search(self, query, limit=5):
+    def search(self, query, limit=5, min_score=0.0):
         return [
             KnowledgeHit(
                 document_id=f"fake-{index}",
@@ -187,6 +189,25 @@ class FakeApiAgent:
 
 
 class ApiTests(unittest.TestCase):
+    def test_github_pages_origin_is_allowed_by_cors(self):
+        with tempfile.TemporaryDirectory() as folder:
+            app = create_app(settings_for(folder, cors_origins=()))
+            app.state.customer_agent = FakeApiAgent()
+            with TestClient(app) as client:
+                response = client.options(
+                    "/chat",
+                    headers={
+                        "Origin": "https://cuishaoxin.github.io",
+                        "Access-Control-Request-Method": "POST",
+                        "Access-Control-Request-Headers": "content-type",
+                    },
+                )
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(
+                response.headers["access-control-allow-origin"],
+                "https://cuishaoxin.github.io",
+            )
+
     def test_post_chat_contract(self):
         with tempfile.TemporaryDirectory() as folder:
             app = create_app(settings_for(folder))
@@ -196,6 +217,15 @@ class ApiTests(unittest.TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()["answer"], "API answer")
             self.assertEqual(response.json()["session_id"], "window-1")
+
+    def test_post_chat_generates_session_id_when_omitted(self):
+        with tempfile.TemporaryDirectory() as folder:
+            app = create_app(settings_for(folder))
+            app.state.customer_agent = FakeApiAgent()
+            with TestClient(app) as client:
+                response = client.post("/chat", json={"message": "你好"})
+            self.assertEqual(response.status_code, 200)
+            self.assertTrue(response.json()["session_id"].startswith("api-"))
 
     def test_upload_contract(self):
         with tempfile.TemporaryDirectory() as folder:

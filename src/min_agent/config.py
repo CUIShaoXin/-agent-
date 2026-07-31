@@ -28,6 +28,7 @@ class Settings:
     embedding_model: str
     dashscope_api_key: str
     dashscope_embedding_model: str
+    dashscope_chat_model: str
     agent_db_path: str
     knowledge_db_path: str
     knowledge_source_dir: str
@@ -39,6 +40,7 @@ class Settings:
     knowledge_auto_build: bool
     context_messages: int
     rag_top_k: int
+    rag_min_score: float
     mysql_host: str
     mysql_port: int
     mysql_user: str
@@ -57,6 +59,7 @@ class Settings:
             embedding_model=os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small"),
             dashscope_api_key=os.getenv("DASHSCOPE_API_KEY", ""),
             dashscope_embedding_model=os.getenv("DASHSCOPE_EMBEDDING_MODEL", "text-embedding-v3"),
+            dashscope_chat_model=os.getenv("DASHSCOPE_CHAT_MODEL", "qwen-plus"),
             agent_db_path=os.getenv("AGENT_DB_PATH", "data/agent.db"),
             knowledge_db_path=os.getenv("KNOWLEDGE_DB_PATH", "data/knowledge.db"),
             knowledge_source_dir=os.getenv("KNOWLEDGE_SOURCE_DIR", _default_knowledge_source_dir()),
@@ -65,9 +68,10 @@ class Settings:
             chroma_collection_name=os.getenv("CHROMA_COLLECTION_NAME", "huachen_enterprise"),
             knowledge_chunk_size=max(100, int(os.getenv("KNOWLEDGE_CHUNK_SIZE", "500"))),
             knowledge_chunk_overlap=max(0, int(os.getenv("KNOWLEDGE_CHUNK_OVERLAP", "100"))),
-            knowledge_auto_build=_boolean("KNOWLEDGE_AUTO_BUILD", True),
+            knowledge_auto_build=_boolean("KNOWLEDGE_AUTO_BUILD", False),
             context_messages=max(4, int(os.getenv("AGENT_CONTEXT_MESSAGES", "12"))),
             rag_top_k=max(1, min(10, int(os.getenv("RAG_TOP_K", "5")))),
+            rag_min_score=max(0.0, min(1.0, float(os.getenv("RAG_MIN_SCORE", "0.45")))),
             mysql_host=os.getenv("MYSQL_HOST", ""),
             mysql_port=int(os.getenv("MYSQL_PORT", "3306")),
             mysql_user=os.getenv("MYSQL_USER", ""),

@@ -32,7 +32,7 @@ type HealthResponse = {
   knowledge_documents: number;
 };
 
-const API_BASE_URL = (process.env.NEXT_PUBLIC_AGENT_API_URL || "http://localhost:8000").replace(/\/$/, "");
+const API_BASE_URL = "http://localhost:8000";
 
 const quickPrompts = [
   "SafeVR 支持哪些培训场景？",
@@ -150,10 +150,17 @@ export function CustomerServiceDemo() {
     } catch (error) {
       stopTraceTimer();
       setTraceStatus("failed");
+      const isConnectionError = error instanceof TypeError;
       const detail = error instanceof Error ? error.message : "未知错误";
       setMessages((current) => [
         ...current,
-        { id: nextMessageId.current++, role: "assistant", text: `暂时无法连接 Agent 服务：${detail}` },
+        {
+          id: nextMessageId.current++,
+          role: "assistant",
+          text: isConnectionError
+            ? "智能客服服务未启动，请启动 FastAPI"
+            : `智能客服请求失败：${detail}`,
+        },
       ]);
     } finally {
       setSending(false);

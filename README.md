@@ -41,8 +41,8 @@ mini-agent --user A --session window-1 --once "查深圳天气并记下下班带
 
 ```powershell
 python -m pip install -e .
-$env:OPENAI_API_KEY="你的 API Key"
 $env:DASHSCOPE_API_KEY="你的 DashScope API Key"
+$env:DASHSCOPE_CHAT_MODEL="qwen-plus"
 $env:KNOWLEDGE_SOURCE_DIR="C:\Users\cui\Desktop\clothing_company_knowledge_base"
 $env:MYSQL_HOST="127.0.0.1"
 $env:MYSQL_USER="agent_readonly"
@@ -53,7 +53,7 @@ python -m uvicorn min_agent.api:app --host 0.0.0.0 --port 8000
 
 接口：
 
-- `POST /chat`：请求体为 `{"message":"...","session_id":"..."}`。
+- `POST /chat`：请求体为 `{"message":"...","session_id":"..."}`；`session_id` 可省略，后端会自动生成。
 - `POST /knowledge/upload`：上传 `.md` 或 `.pdf` 企业资料，自动切块并写入同一个 Chroma 集合。
 - `GET /health`：查看 LLM、MySQL 和知识库是否就绪。
 - `GET /docs`：FastAPI 自动生成的接口调试页面。
@@ -96,18 +96,20 @@ $env:CHROMA_DB_PATH="knowledge_base/chroma_db"
 $env:CHROMA_COLLECTION_NAME="huachen_enterprise"
 $env:KNOWLEDGE_CHUNK_SIZE="500"
 $env:KNOWLEDGE_CHUNK_OVERLAP="100"
-$env:KNOWLEDGE_AUTO_BUILD="true"
+$env:KNOWLEDGE_AUTO_BUILD="false"
+$env:RAG_MIN_SCORE="0.45"
 ```
 
-首次启动 FastAPI 时：
+先运行一次 `build-knowledge --rebuild` 构建知识库。FastAPI 默认采用严格加载模式：
 
 1. 初始化 `DashScopeEmbeddings(model="text-embedding-v3")`。
 2. 检查 Chroma collection 是否已有数据。
-3. 已存在则直接创建 Retriever，不重新 Embedding。
-4. 不存在则扫描源目录，把 `.md` 和 `.pdf` 同步到 `knowledge_base/docs`。
-5. Markdown 使用 `TextLoader`，PDF 使用 `PyPDFLoader`。
-6. 使用 token 计数的 `RecursiveCharacterTextSplitter` 按约 500 tokens、100 tokens overlap 切分。
-7. 写入 `knowledge_base/chroma_db`，随后初始化 Retriever。
+3. 已存在则直接创建 Retriever，不重新 Embedding，并输出 `Knowledge Base Ready`。
+4. 不存在或集合为空则停止启动并提示先执行知识库构建。
+
+如需开发环境首次启动时自动构建，可显式设置 `KNOWLEDGE_AUTO_BUILD=true`。Markdown 使用
+`TextLoader`，PDF 使用 `PyPDFLoader`，并使用 token 计数的
+`RecursiveCharacterTextSplitter` 按约 500 tokens、100 tokens overlap 切分。
 
 每个 chunk 保留以下 metadata：
 
@@ -136,7 +138,17 @@ python scripts/verify_knowledge.py
 python -m uvicorn min_agent.api:app --host 0.0.0.0 --port 8000
 ```
 
-`GET /health` 中的 `knowledge_backend`、`knowledge_documents`、`knowledge_chunks` 和 `embedding_model` 可用于确认加载状态。
+`GET /health` 中的 `knowledge_backend`、`knowledge_documents`、`knowledge_chunks`、`embedding_model`
+和 `model` 可用于确认加载状态。
+
+完整真实 RAG 验证：
+
+```powershell
+python scripts/verify_rag_agent.py
+```
+
+脚本使用已有 Chroma，不会重新构建知识库，并依次验证公司介绍、库存管理和生产流程三个问题的
+召回来源及 Qwen 最终回答。
 
 ### 智能客服调用流程
 
@@ -147,7 +159,7 @@ flowchart LR
     I -->|需要业务数据| Q["读取 MySQL Schema"]
     Q --> S["生成并校验只读 SELECT"]
     S --> D["MySQL 查询"]
-    R --> L["LLM 证据总结"]
+    R --> L["DashScope qwen-plus 证据总结"]
     D --> L
     M["SQLite Session Memory"] --> I
     M --> L

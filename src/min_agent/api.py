@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import threading
+import uuid
 from contextlib import asynccontextmanager
 from dataclasses import asdict
 from typing import Any
@@ -20,7 +21,7 @@ class ChatRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     message: str = Field(min_length=1, max_length=8000)
-    session_id: str = Field(min_length=1, max_length=128)
+    session_id: str | None = Field(default=None, min_length=1, max_length=128)
 
 
 class ChatResponse(BaseModel):
@@ -35,20 +36,24 @@ class ChatResponse(BaseModel):
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     resolved = settings or Settings.from_env()
+    required_cors_origins = {
+        "http://localhost:3000",
+        "https://cuishaoxin.github.io",
+    }
 
     @asynccontextmanager
     async def lifespan(application: FastAPI):
         if application.state.customer_agent is None:
-            if resolved.openai_api_key and resolved.dashscope_api_key:
-                LOGGER.info("Initializing customer Agent and offline Chroma knowledge base")
+            if resolved.dashscope_api_key:
+                LOGGER.info("Initializing DashScope customer Agent")
                 application.state.customer_agent = CustomerServiceAgent.from_settings(resolved)
-            else:
-                LOGGER.warning(
-                    "Customer Agent startup deferred: OPENAI_API_KEY configured=%s, "
-                    "DASHSCOPE_API_KEY configured=%s",
-                    bool(resolved.openai_api_key),
-                    bool(resolved.dashscope_api_key),
+                LOGGER.info(
+                    "Knowledge Base Ready: directory=%s collection=%s",
+                    resolved.chroma_db_path,
+                    resolved.chroma_collection_name,
                 )
+            else:
+                LOGGER.warning("Customer Agent startup deferred: DASHSCOPE_API_KEY is not configured")
         try:
             yield
         finally:
@@ -59,7 +64,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app = FastAPI(title="Minimum Agent Customer Service API", version="1.0.0", lifespan=lifespan)
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=list(resolved.cors_origins),
+        allow_origins=sorted(set(resolved.cors_origins) | required_cors_origins),
         allow_credentials=False,
         allow_methods=["GET", "POST", "OPTIONS"],
         allow_headers=["Content-Type"],
@@ -81,10 +86,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.get("/health")
     def health() -> dict[str, Any]:
-        if not resolved.openai_api_key or not resolved.dashscope_api_key:
+        if not resolved.dashscope_api_key:
             return {
                 "status": "not_ready",
-                "llm_configured": bool(resolved.openai_api_key),
+                "llm_configured": False,
                 "embedding_configured": bool(resolved.dashscope_api_key),
                 "mysql_configured": resolved.mysql_configured,
                 "knowledge_documents": 0,
@@ -94,7 +99,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.post("/chat", response_model=ChatResponse)
     def chat(payload: ChatRequest) -> ChatResponse:
         try:
-            result = get_agent().chat(payload.message, payload.session_id)
+            session_id = payload.session_id or f"api-{uuid.uuid4().hex}"
+            result = get_agent().chat(payload.message, session_id)
             return ChatResponse(**asdict(result))
         except HTTPException:
             raise

@@ -11,7 +11,6 @@ from min_agent.customer_agent import CustomerServiceAgent
 
 @unittest.skipUnless(
     os.getenv("RUN_REAL_API_TEST") == "1"
-    and os.getenv("OPENAI_API_KEY")
     and os.getenv("DASHSCOPE_API_KEY"),
     "real API test is opt-in",
 )
@@ -32,6 +31,7 @@ class RealCustomerApiTest(unittest.TestCase):
                 knowledge_docs_dir=str(Path(folder) / "knowledge_base" / "docs"),
                 chroma_db_path=str(Path(folder) / "knowledge_base" / "chroma_db"),
                 chroma_collection_name="real-customer-test",
+                knowledge_auto_build=True,
                 mysql_host="",
                 mysql_user="",
                 mysql_database="",
