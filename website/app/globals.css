@@ -862,6 +862,165 @@ button { color: inherit; }
   .vibe-course-card h2 { font-size: 25px; }
 }
 
+/* Vibe Coding · phase one */
+.vibe-phase-one { display: none; scroll-margin-top: 0; }
+.vibe-phase-one:target { display: block; }
+.vibe-course-page:has(.vibe-phase-one:target) .vibe-course-main { display: none; }
+.vibe-phase-shell { width: min(100% - 40px,920px); margin-inline: auto; padding: 38px 0 72px; }
+.vibe-phase-back { display: inline-flex; margin-bottom: 32px; color: #6552c8; font-size: 12px; font-weight: 800; }
+.vibe-phase-hero {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 330px;
+  align-items: center;
+  gap: 48px;
+  min-height: 440px;
+  padding: 44px 48px;
+  border: 2px solid #211a2c;
+  border-radius: 26px;
+  background: rgba(255,254,250,.97);
+  box-shadow: 10px 10px 0 #211a2c;
+}
+.vibe-phase-hero > div > span,.vibe-phase-heading > span {
+  color: #7656ff;
+  font: 800 10px var(--font-geist-mono),monospace;
+  letter-spacing: .12em;
+}
+.vibe-phase-hero h1 { margin: 15px 0 18px; font-size: clamp(45px,5.4vw,66px); line-height: 1.02; letter-spacing: -.065em; }
+.vibe-phase-hero h1 em { color: #7656ff; font-family: Georgia,"Times New Roman",serif; font-weight: 400; }
+.vibe-phase-hero p { margin: 0; color: #6b6270; font-size: 14px; line-height: 1.85; }
+.vibe-phase-hero > div > a {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 36px;
+  margin-top: 24px;
+  padding: 0 17px;
+  border-radius: 10px;
+  background: #7656ff;
+  color: white;
+  font-size: 12px;
+  font-weight: 800;
+}
+.vibe-phase-hero small { display: block; margin-top: 12px; color: #968c9d; font-size: 9px; }
+.vibe-phase-hero figure {
+  position: relative;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  border-radius: 24px;
+  background: radial-gradient(circle,#efe9ff 0,#ddd2ff 46%,#29203a 47%,#211a2c 100%);
+}
+.vibe-phase-hero figure img { width: 98%; height: 98%; object-fit: contain; filter: drop-shadow(0 18px 22px rgba(29,20,44,.2)); }
+.vibe-phase-hero figcaption { position: absolute; right: 12px; bottom: 10px; color: #b9acd2; font: 7px var(--font-geist-mono),monospace; letter-spacing: .08em; }
+.vibe-phase-heading { margin-bottom: 24px; }
+.vibe-phase-heading h2 { margin: 9px 0 8px; font-size: clamp(30px,4vw,42px); letter-spacing: -.05em; }
+.vibe-phase-heading p { max-width: 720px; margin: 0; color: #756c79; font-size: 13px; line-height: 1.75; }
+.vibe-phase-playground,.vibe-phase-outcome,.vibe-phase-rhythm,.vibe-phase-map { padding-top: 74px; }
+.vibe-mini-projects { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+.vibe-mini-projects article {
+  min-height: 190px;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  padding: 19px;
+  border: 2px solid #211a2c;
+  border-radius: 15px;
+  background: rgba(255,254,250,.92);
+  box-shadow: 4px 4px 0 #211a2c;
+}
+.vibe-mini-projects article > span { font-size: 24px; }
+.vibe-mini-projects h3 { margin: 9px 0 5px; font-size: 17px; }
+.vibe-mini-projects p { margin: 0; color: #716877; font-size: 11px; line-height: 1.65; }
+.vibe-mini-projects a { margin-top: 13px; color: #6249d2; font-size: 10px; font-weight: 800; }
+.vibe-phase-start {
+  width: fit-content;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  margin: 22px auto 0;
+  padding: 0 22px;
+  border: 2px solid #211a2c;
+  border-radius: 10px;
+  background: #7656ff;
+  color: white;
+  box-shadow: 4px 4px 0 #211a2c;
+  font-size: 13px;
+  font-weight: 800;
+}
+.vibe-phase-outcome { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.vibe-phase-outcome > .vibe-phase-heading { grid-column: 1/-1; }
+.vibe-phase-outcome-visual {
+  position: relative;
+  min-height: 330px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 20px;
+  background: linear-gradient(145deg,#ede7ff,#d8cdfb);
+}
+.vibe-phase-outcome-visual img { width: 300px; height: 300px; object-fit: contain; }
+.vibe-phase-outcome-visual div {
+  position: absolute;
+  right: 15px;
+  bottom: 14px;
+  left: 15px;
+  display: flex;
+  justify-content: center;
+  gap: 9px;
+  padding: 10px;
+  border-radius: 9px;
+  background: rgba(33,26,44,.9);
+  color: white;
+  font: 800 8px var(--font-geist-mono),monospace;
+}
+.vibe-phase-outcome-visual i { color: #a58cff; font-style: normal; }
+.vibe-phase-takeaways { padding: 28px; background: #211a2c; color: white; border-radius: 20px; }
+.vibe-phase-takeaways > b { color: #aa96fc; font-size: 11px; }
+.vibe-phase-takeaways ul { display: grid; gap: 14px; margin: 22px 0 0; padding-left: 18px; }
+.vibe-phase-takeaways li { color: #c9c0cf; font-size: 12px; line-height: 1.7; }
+.vibe-phase-takeaways strong { color: white; }
+.vibe-rhythm-board { display: grid; gap: 8px; padding: 18px; border: 2px solid #211a2c; border-radius: 16px; background: rgba(255,254,250,.94); box-shadow: 5px 5px 0 #211a2c; }
+.vibe-rhythm-board > div { display: grid; grid-template-columns: 90px 130px 1fr; align-items: center; gap: 14px; min-height: 50px; padding: 8px 10px; border-bottom: 1px solid #e6e0d8; }
+.vibe-rhythm-board > div:last-child { border-bottom: 0; }
+.vibe-rhythm-board b { padding: 7px 9px; border-radius: 7px; background: #211a2c; color: white; text-align: center; font: 800 9px var(--font-geist-mono),monospace; }
+.vibe-rhythm-board strong { font-size: 13px; }
+.vibe-rhythm-board span { color: #7a717f; font-size: 11px; }
+.vibe-rhythm-board .vibe-rhythm-break { border: 1px dashed #9b8da7; border-radius: 9px; background: #f2eee7; }
+.vibe-rhythm-break b { border: 1px dashed #8f8398; background: transparent; color: #655b6a; }
+.vibe-phase-map { scroll-margin-top: 25px; }
+.vibe-phase-lessons { display: grid; gap: 12px; }
+.vibe-phase-lessons article { padding: 22px 24px; border: 2px solid #211a2c; border-radius: 15px; background: rgba(255,254,250,.95); box-shadow: 4px 4px 0 #211a2c; }
+.vibe-phase-lessons article > span { display: inline-flex; padding: 6px 9px; border-radius: 6px; background: #211a2c; color: white; font: 800 8px var(--font-geist-mono),monospace; }
+.vibe-phase-lessons h3 { margin: 14px 0 6px; font-size: 21px; }
+.vibe-phase-lessons p { margin: 0; color: #746a78; font-size: 12px; line-height: 1.7; }
+.vibe-phase-lessons a { display: inline-block; margin-top: 11px; color: #6046ce; font-size: 10px; font-weight: 800; }
+.vibe-phase-lessons .vibe-phase-project { background: #f0ebff; }
+.vibe-phase-lessons .vibe-phase-project > span { background: #7656ff; }
+.vibe-phase-next { display: flex; align-items: center; justify-content: space-between; gap: 34px; margin-top: 68px; padding: 30px; border-radius: 18px; background: #211a2c; color: white; }
+.vibe-phase-next span { color: #aa96fc; font: 800 9px var(--font-geist-mono),monospace; }
+.vibe-phase-next h2 { margin: 9px 0 5px; font-size: 24px; }
+.vibe-phase-next p { margin: 0; color: #bdb3c6; font-size: 11px; }
+.vibe-phase-next > a { flex: 0 0 auto; padding: 13px 16px; border-radius: 9px; background: white; color: #211a2c; font-size: 11px; font-weight: 800; }
+@media (max-width: 760px) {
+  .vibe-phase-shell { width: min(100% - 28px,920px); }
+  .vibe-phase-hero { grid-template-columns: 1fr; padding: 28px; }
+  .vibe-phase-hero figure { width: min(100%,360px); margin-inline: auto; grid-row: 1; }
+  .vibe-phase-hero > div { grid-row: 2; }
+  .vibe-mini-projects { grid-template-columns: 1fr; }
+  .vibe-phase-outcome { grid-template-columns: 1fr; }
+  .vibe-phase-outcome > .vibe-phase-heading { grid-column: 1; }
+  .vibe-rhythm-board > div { grid-template-columns: 76px 1fr; }
+  .vibe-rhythm-board span { grid-column: 2; }
+  .vibe-phase-next { align-items: flex-start; flex-direction: column; }
+}
+@media (max-width: 460px) {
+  .vibe-phase-hero { padding: 22px; box-shadow: 6px 6px 0 #211a2c; }
+  .vibe-phase-hero h1 { font-size: 43px; }
+  .vibe-phase-playground,.vibe-phase-outcome,.vibe-phase-rhythm,.vibe-phase-map { padding-top: 56px; }
+  .vibe-phase-takeaways,.vibe-phase-next { padding: 22px; }
+}
+
 /* Course map */
 .course-map-page, .session-frame-page { min-height: 100vh; color: var(--ink); }
 .course-map-header {
