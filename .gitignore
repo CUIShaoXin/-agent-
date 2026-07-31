@@ -4,6 +4,9 @@ __pycache__/
 .venv/
 .env
 data/
+knowledge_base/chroma_db/
+knowledge_base/docs/*
+!knowledge_base/docs/.gitkeep
 !website/data/
 !website/data/sessions.ts
 *.db

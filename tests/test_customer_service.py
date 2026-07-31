@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 from min_agent.api import create_app
 from min_agent.config import Settings
 from min_agent.customer_agent import ChatResult, CustomerServiceAgent
-from min_agent.knowledge import SQLiteKnowledgeBase, extract_document_text
+from min_agent.knowledge import KnowledgeHit, extract_document_text
 from min_agent.mysql_database import MySQLDatabase
 from min_agent.storage import SQLiteStore
 
@@ -18,8 +18,17 @@ def settings_for(folder: str, **overrides) -> Settings:
         "openai_api_key": "test-key",
         "openai_model": "test-model",
         "embedding_model": "test-embedding",
+        "dashscope_api_key": "test-dashscope-key",
+        "dashscope_embedding_model": "text-embedding-v3",
         "agent_db_path": str(Path(folder) / "agent.db"),
         "knowledge_db_path": str(Path(folder) / "knowledge.db"),
+        "knowledge_source_dir": str(Path(folder) / "source"),
+        "knowledge_docs_dir": str(Path(folder) / "knowledge_base" / "docs"),
+        "chroma_db_path": str(Path(folder) / "knowledge_base" / "chroma_db"),
+        "chroma_collection_name": "test-knowledge",
+        "knowledge_chunk_size": 500,
+        "knowledge_chunk_overlap": 100,
+        "knowledge_auto_build": True,
         "context_messages": 12,
         "rag_top_k": 3,
         "mysql_host": "",
@@ -70,21 +79,55 @@ class FakeDatabase:
         return {"sql": sql, "row_count": 1, "rows": [{"name": "A", "revenue": 100}]}
 
 
+class FakeKnowledgeBase:
+    def __init__(self):
+        self.documents = []
+
+    def ingest(self, filename, data):
+        content = extract_document_text(filename, data)
+        self.documents = [(filename, content)]
+        return {"document_id": "fake-doc", "filename": filename, "chunks": 1}
+
+    def search(self, query, limit=5):
+        return [
+            KnowledgeHit(
+                document_id=f"fake-{index}",
+                filename=filename,
+                content=content,
+                score=1.0,
+                metadata={
+                    "source": filename,
+                    "category": Path(filename).stem,
+                    "company": "华辰服饰有限公司",
+                },
+            )
+            for index, (filename, content) in enumerate(self.documents[:limit])
+        ]
+
+    def document_count(self):
+        return len(self.documents)
+
+    def chunk_count(self):
+        return len(self.documents)
+
+    def close(self):
+        pass
+
+
 class CustomerServiceTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.settings = settings_for(self.temp.name)
         self.store = SQLiteStore(self.settings.agent_db_path)
-        self.knowledge = SQLiteKnowledgeBase(self.settings.knowledge_db_path)
+        self.knowledge = FakeKnowledgeBase()
 
     def tearDown(self):
         self.store.close()
-        self.knowledge.close()
         self.temp.cleanup()
 
     def test_rag_and_session_memory_are_used(self):
         llm = FakeLLM()
-        self.knowledge.ingest("产品FAQ.md", "企业版支持私有化部署和多轮会话记忆。", llm)
+        self.knowledge.ingest("产品FAQ.md", "企业版支持私有化部署和多轮会话记忆。".encode())
         agent = CustomerServiceAgent(self.settings, llm, self.store, self.knowledge, FakeDatabase())
 
         first = agent.chat("支持私有化部署吗？", "window-1")
@@ -121,7 +164,7 @@ class CustomerServiceTests(unittest.TestCase):
             "企业售后政策.md",
             "# 售后政策\n\n企业版提供 7×24 小时支持，并支持私有化部署。".encode("utf-8"),
         )
-        hits = self.knowledge.search("是否支持私有化部署？", llm, limit=3)
+        hits = self.knowledge.search("是否支持私有化部署？", limit=3)
 
         self.assertEqual(uploaded["filename"], "企业售后政策.md")
         self.assertGreaterEqual(uploaded["chunks"], 1)

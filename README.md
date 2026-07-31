@@ -10,6 +10,7 @@
 - 工具注册机制：名称、描述、JSON Schema、handler
 - 输出解析：安全 reasoning summary、function call、final answer、坏 JSON 参数
 - SQLite session 隔离与多轮追问
+- LangChain 文档加载/切分 + DashScope `text-embedding-v3` + ChromaDB 离线企业知识库
 - 基础 context 压缩、最大执行步数、工具/API 异常处理
 - SQLite 完整 trace
 - 无网络单测 + opt-in 真实 API 集成测试
@@ -41,6 +42,8 @@ mini-agent --user A --session window-1 --once "查深圳天气并记下下班带
 ```powershell
 python -m pip install -e .
 $env:OPENAI_API_KEY="你的 API Key"
+$env:DASHSCOPE_API_KEY="你的 DashScope API Key"
+$env:KNOWLEDGE_SOURCE_DIR="C:\Users\cui\Desktop\clothing_company_knowledge_base"
 $env:MYSQL_HOST="127.0.0.1"
 $env:MYSQL_USER="agent_readonly"
 $env:MYSQL_PASSWORD="你的只读账号密码"
@@ -51,7 +54,7 @@ python -m uvicorn min_agent.api:app --host 0.0.0.0 --port 8000
 接口：
 
 - `POST /chat`：请求体为 `{"message":"...","session_id":"..."}`。
-- `POST /knowledge/upload`：上传 `.txt`、`.md`、`.csv` 或 `.pdf` 企业资料，自动切块并生成 Embedding。
+- `POST /knowledge/upload`：上传 `.md` 或 `.pdf` 企业资料，自动切块并写入同一个 Chroma 集合。
 - `GET /health`：查看 LLM、MySQL 和知识库是否就绪。
 - `GET /docs`：FastAPI 自动生成的接口调试页面。
 
@@ -70,14 +73,77 @@ Invoke-RestMethod http://localhost:8000/chat -Method Post -ContentType "applicat
 
 前端复制 `website/.env.example` 为 `website/.env.local`，把 `NEXT_PUBLIC_AGENT_API_URL` 设置为后端地址。线上 GitHub Pages 在仓库 Variables 中配置同名变量。
 
-智能客服页面的“本次会话”卡片内提供“上传知识库”入口，可直接选择 PDF 或 Markdown 文件。上传成功后页面会显示文件名和切片数量；后续提问自动检索该知识库，并由 LLM 严格根据召回内容作答。
+智能客服页面的“本次会话”卡片内仍保留“上传知识库”入口。离线目录会在服务启动时自动加载，因此日常使用不需要重复上传。
+
+## 企业知识库离线构建
+
+### 目录约定
+
+```text
+knowledge_base/
+├── docs/       # 从 KNOWLEDGE_SOURCE_DIR 同步的 Markdown/PDF
+└── chroma_db/  # 本地持久化 ChromaDB（不提交 Git）
+```
+
+默认会优先识别当前用户桌面的 `clothing_company_knowledge_base` 目录；生产环境建议显式配置：
+
+```powershell
+$env:DASHSCOPE_API_KEY="你的 DashScope API Key"
+$env:DASHSCOPE_EMBEDDING_MODEL="text-embedding-v3"
+$env:KNOWLEDGE_SOURCE_DIR="C:\Users\cui\Desktop\clothing_company_knowledge_base"
+$env:KNOWLEDGE_DOCS_DIR="knowledge_base/docs"
+$env:CHROMA_DB_PATH="knowledge_base/chroma_db"
+$env:CHROMA_COLLECTION_NAME="huachen_enterprise"
+$env:KNOWLEDGE_CHUNK_SIZE="500"
+$env:KNOWLEDGE_CHUNK_OVERLAP="100"
+$env:KNOWLEDGE_AUTO_BUILD="true"
+```
+
+首次启动 FastAPI 时：
+
+1. 初始化 `DashScopeEmbeddings(model="text-embedding-v3")`。
+2. 检查 Chroma collection 是否已有数据。
+3. 已存在则直接创建 Retriever，不重新 Embedding。
+4. 不存在则扫描源目录，把 `.md` 和 `.pdf` 同步到 `knowledge_base/docs`。
+5. Markdown 使用 `TextLoader`，PDF 使用 `PyPDFLoader`。
+6. 使用 token 计数的 `RecursiveCharacterTextSplitter` 按约 500 tokens、100 tokens overlap 切分。
+7. 写入 `knowledge_base/chroma_db`，随后初始化 Retriever。
+
+每个 chunk 保留以下 metadata：
+
+```json
+{
+  "source": "华辰服饰有限公司_生产流程.pdf",
+  "category": "生产流程",
+  "company": "华辰服饰有限公司",
+  "page_number": 1,
+  "chunk_index": 0
+}
+```
+
+也可以在启动服务前手动构建或强制重建：
+
+```powershell
+python -m pip install -e .
+build-knowledge
+build-knowledge --rebuild
+python scripts/verify_knowledge.py
+```
+
+完成后启动 Agent：
+
+```powershell
+python -m uvicorn min_agent.api:app --host 0.0.0.0 --port 8000
+```
+
+`GET /health` 中的 `knowledge_backend`、`knowledge_documents`、`knowledge_chunks` 和 `embedding_model` 可用于确认加载状态。
 
 ### 智能客服调用流程
 
 ```mermaid
 flowchart LR
     U["用户问题 + session_id"] --> I["Intent 识别"]
-    I --> R["SQLite 向量知识库检索"]
+    I --> R["Chroma Retriever 检索"]
     I -->|需要业务数据| Q["读取 MySQL Schema"]
     Q --> S["生成并校验只读 SELECT"]
     S --> D["MySQL 查询"]
@@ -127,7 +193,8 @@ flowchart LR
 - `src/min_agent/cli.py`：终端交互入口。
 - `src/min_agent/api.py`：`/chat`、知识库上传与健康检查接口。
 - `src/min_agent/customer_agent.py`：Intent → RAG → MySQL → LLM 的客服 Agent 编排。
-- `src/min_agent/knowledge.py`：文档解析、切块、Embedding 与 SQLite 向量召回。
+- `src/min_agent/knowledge_builder.py`：离线目录扫描、Loader、token 切分、metadata 与 Chroma 构建。
+- `src/min_agent/knowledge.py`：Chroma VectorStore、Retriever、在线查询与增量上传适配层。
 - `src/min_agent/mysql_database.py`：MySQL schema 读取、只读校验和查询。
 
 ## Loop 如何工作
@@ -179,6 +246,20 @@ $env:RUN_REAL_API_TEST="1"
 python -m unittest tests.test_real_api -v
 ```
 
+真实企业知识库召回测试（会调用 DashScope Embedding 并产生费用）：
+
+```powershell
+$env:DASHSCOPE_API_KEY="你的 DashScope API Key"
+$env:RUN_OFFLINE_KB_TEST="1"
+python -m unittest tests.test_real_offline_knowledge -v
+```
+
+该测试覆盖：
+
+- “华辰服饰公司的主营业务是什么？” → `公司介绍.md`
+- “库存管理流程是什么？” → `库存管理.pdf`
+- “生产流程有哪些步骤？” → `生产流程.pdf`
+
 ## Trace
 
 每轮会记录：`run_start`、`llm_request`、`llm_response`、`tool_result`、`run_end`、`llm_error` 或 `max_steps_reached`。CLI 的 `--trace` 可查看 JSON；生产环境可将 `SQLiteStore.trace` 替换成 OpenTelemetry。
@@ -196,7 +277,7 @@ python -m unittest tests.test_real_api -v
 - `search` 和 `weather` 按题目许可使用 mock，回答会标明来源；计算器与 todo 是真实本地工具。
 - 真实 LLM 连接只依赖 Python 标准库，降低项目复杂度；可按需换成官方 SDK，但不会改变 Runtime。
 - JSON Schema 主要由模型/API 约束，handler 仍做必要业务校验；完整 JSON Schema validator 不在最小范围内。
-- 单进程 SQLite 足够作业演示；线上多实例应使用事务更强的数据库、鉴权、限流和可观测平台。
+- SQLite 继续负责 session/trace；ChromaDB 负责企业知识向量。线上多实例应使用共享向量服务、鉴权、限流和可观测平台。
 
 ## 安全提示
 

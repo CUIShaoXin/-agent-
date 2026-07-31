@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from .config import Settings
-from .knowledge import KnowledgeHit, SQLiteKnowledgeBase
+from .knowledge import ChromaKnowledgeBase, KnowledgeHit
 from .mysql_database import MySQLDatabase
 from .openai_service import OpenAIService
 from .storage import SQLiteStore
@@ -30,7 +30,7 @@ class CustomerServiceAgent:
         settings: Settings,
         llm: OpenAIService,
         store: SQLiteStore,
-        knowledge: SQLiteKnowledgeBase,
+        knowledge: ChromaKnowledgeBase,
         database: MySQLDatabase,
     ) -> None:
         self.settings = settings
@@ -41,13 +41,20 @@ class CustomerServiceAgent:
 
     @classmethod
     def from_settings(cls, settings: Settings) -> "CustomerServiceAgent":
-        return cls(
-            settings=settings,
-            llm=OpenAIService(settings.openai_api_key, settings.openai_model, settings.embedding_model),
-            store=SQLiteStore(settings.agent_db_path),
-            knowledge=SQLiteKnowledgeBase(settings.knowledge_db_path),
-            database=MySQLDatabase(settings),
-        )
+        llm = OpenAIService(settings.openai_api_key, settings.openai_model, settings.embedding_model)
+        store = SQLiteStore(settings.agent_db_path)
+        try:
+            knowledge = ChromaKnowledgeBase.from_settings(settings)
+            return cls(
+                settings=settings,
+                llm=llm,
+                store=store,
+                knowledge=knowledge,
+                database=MySQLDatabase(settings),
+            )
+        except Exception:
+            store.close()
+            raise
 
     @staticmethod
     def _history_text(context: list[dict[str, str]]) -> str:
@@ -101,6 +108,9 @@ class CustomerServiceAgent:
                 "filename": hit.filename,
                 "score": round(hit.score, 4),
                 "content": hit.content,
+                "category": hit.metadata.get("category"),
+                "company": hit.metadata.get("company"),
+                "page_number": hit.metadata.get("page_number"),
             }
             for hit in hits
         ]
@@ -125,7 +135,7 @@ class CustomerServiceAgent:
         self.store.trace(run_id, user_id, session_id, 1, "intent", intent)
 
         query = str(intent.get("rewritten_query") or message)
-        hits = self.knowledge.search(query, self.llm, self.settings.rag_top_k)
+        hits = self.knowledge.search(query, self.settings.rag_top_k)
         sources = self._source_payload(hits)
         self.store.trace(run_id, user_id, session_id, 2, "rag_result", {
             "query": query,
@@ -174,15 +184,16 @@ class CustomerServiceAgent:
         )
 
     def upload_knowledge(self, filename: str, data: bytes) -> dict[str, int | str]:
-        from .knowledge import extract_document_text
-
-        return self.knowledge.ingest(filename, extract_document_text(filename, data), self.llm)
+        return self.knowledge.ingest(filename, data)
 
     def health(self) -> dict[str, Any]:
         return {
             "llm_configured": bool(self.settings.openai_api_key),
             "mysql_configured": self.database.configured,
             "knowledge_documents": self.knowledge.document_count(),
+            "knowledge_chunks": self.knowledge.chunk_count(),
+            "knowledge_backend": "chroma",
+            "embedding_model": self.settings.dashscope_embedding_model,
             "model": self.settings.openai_model,
         }
 

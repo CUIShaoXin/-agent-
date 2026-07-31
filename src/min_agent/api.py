@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import threading
 from contextlib import asynccontextmanager
 from dataclasses import asdict
@@ -11,6 +12,8 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from .config import Settings
 from .customer_agent import CustomerServiceAgent
+
+LOGGER = logging.getLogger(__name__)
 
 
 class ChatRequest(BaseModel):
@@ -35,10 +38,23 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(application: FastAPI):
-        yield
-        agent = application.state.customer_agent
-        if agent is not None and hasattr(agent, "close"):
-            agent.close()
+        if application.state.customer_agent is None:
+            if resolved.openai_api_key and resolved.dashscope_api_key:
+                LOGGER.info("Initializing customer Agent and offline Chroma knowledge base")
+                application.state.customer_agent = CustomerServiceAgent.from_settings(resolved)
+            else:
+                LOGGER.warning(
+                    "Customer Agent startup deferred: OPENAI_API_KEY configured=%s, "
+                    "DASHSCOPE_API_KEY configured=%s",
+                    bool(resolved.openai_api_key),
+                    bool(resolved.dashscope_api_key),
+                )
+        try:
+            yield
+        finally:
+            agent = application.state.customer_agent
+            if agent is not None and hasattr(agent, "close"):
+                agent.close()
 
     app = FastAPI(title="Minimum Agent Customer Service API", version="1.0.0", lifespan=lifespan)
     app.add_middleware(
@@ -59,16 +75,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             if app.state.customer_agent is None:
                 try:
                     app.state.customer_agent = CustomerServiceAgent.from_settings(resolved)
-                except ValueError as exc:
+                except (FileNotFoundError, RuntimeError, ValueError) as exc:
                     raise HTTPException(status_code=503, detail=str(exc)) from exc
         return app.state.customer_agent
 
     @app.get("/health")
     def health() -> dict[str, Any]:
-        if not resolved.openai_api_key:
+        if not resolved.openai_api_key or not resolved.dashscope_api_key:
             return {
                 "status": "not_ready",
-                "llm_configured": False,
+                "llm_configured": bool(resolved.openai_api_key),
+                "embedding_configured": bool(resolved.dashscope_api_key),
                 "mysql_configured": resolved.mysql_configured,
                 "knowledge_documents": 0,
             }

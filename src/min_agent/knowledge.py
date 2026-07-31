@@ -1,19 +1,15 @@
 from __future__ import annotations
 
+import hashlib
 import io
-import json
-import math
-import sqlite3
-import threading
-import uuid
-from dataclasses import dataclass
-from datetime import datetime, timezone
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Protocol
+from typing import Any
 
+from langchain_chroma import Chroma
 
-class Embedder(Protocol):
-    def embed(self, texts: list[str]) -> list[list[float]]: ...
+from .config import Settings
+from .knowledge_builder import KnowledgeBuilder
 
 
 @dataclass(frozen=True, slots=True)
@@ -22,34 +18,13 @@ class KnowledgeHit:
     filename: str
     content: str
     score: float
-
-
-def _now() -> str:
-    return datetime.now(timezone.utc).isoformat()
-
-
-def _chunk_text(text: str, size: int = 900, overlap: int = 120) -> list[str]:
-    normalized = "\n".join(line.strip() for line in text.splitlines() if line.strip())
-    if not normalized:
-        return []
-    chunks: list[str] = []
-    start = 0
-    while start < len(normalized):
-        end = min(len(normalized), start + size)
-        if end < len(normalized):
-            boundary = max(normalized.rfind("\n", start, end), normalized.rfind("。", start, end))
-            if boundary > start + size // 2:
-                end = boundary + 1
-        chunks.append(normalized[start:end].strip())
-        if end >= len(normalized):
-            break
-        start = max(start + 1, end - overlap)
-    return [chunk for chunk in chunks if chunk]
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 def extract_document_text(filename: str, data: bytes) -> str:
+    """Backward-compatible text extraction helper for callers outside the builder."""
     suffix = Path(filename).suffix.lower()
-    if suffix in {".txt", ".md", ".csv"}:
+    if suffix == ".md":
         for encoding in ("utf-8-sig", "utf-8", "gb18030"):
             try:
                 return data.decode(encoding)
@@ -63,92 +38,96 @@ def extract_document_text(filename: str, data: bytes) -> str:
             raise RuntimeError("PDF support requires pypdf") from exc
         reader = PdfReader(io.BytesIO(data))
         return "\n".join((page.extract_text() or "") for page in reader.pages)
-    raise ValueError("仅支持 .txt、.md、.csv 和 .pdf 文件")
+    raise ValueError("仅支持 .md 和 .pdf 文件")
 
 
-class SQLiteKnowledgeBase:
-    def __init__(self, path: str) -> None:
-        self.path = path
-        if path != ":memory:":
-            Path(path).parent.mkdir(parents=True, exist_ok=True)
-        self._db = sqlite3.connect(path, check_same_thread=False)
-        self._db.row_factory = sqlite3.Row
-        self._lock = threading.RLock()
-        with self._db:
-            self._db.executescript("""
-                CREATE TABLE IF NOT EXISTS knowledge_documents (
-                    id TEXT PRIMARY KEY, filename TEXT NOT NULL,
-                    created_at TEXT NOT NULL
-                );
-                CREATE TABLE IF NOT EXISTS knowledge_chunks (
-                    id TEXT PRIMARY KEY, document_id TEXT NOT NULL,
-                    chunk_index INTEGER NOT NULL, content TEXT NOT NULL,
-                    embedding TEXT NOT NULL,
-                    FOREIGN KEY(document_id) REFERENCES knowledge_documents(id)
-                );
-                CREATE INDEX IF NOT EXISTS idx_knowledge_chunks_document
-                    ON knowledge_chunks(document_id, chunk_index);
-            """)
+class ChromaKnowledgeBase:
+    """Chroma-backed enterprise knowledge store and LangChain retriever."""
 
-    def ingest(self, filename: str, text: str, embedder: Embedder) -> dict[str, int | str]:
-        chunks = _chunk_text(text)
-        if not chunks:
-            raise ValueError("文档没有可索引的文字内容")
-        embeddings = embedder.embed(chunks)
-        document_id = uuid.uuid4().hex
-        with self._lock, self._db:
-            self._db.execute(
-                "INSERT INTO knowledge_documents(id,filename,created_at) VALUES(?,?,?)",
-                (document_id, filename, _now()),
-            )
-            self._db.executemany(
-                "INSERT INTO knowledge_chunks(id,document_id,chunk_index,content,embedding) VALUES(?,?,?,?,?)",
-                [
-                    (uuid.uuid4().hex, document_id, index, chunk, json.dumps(vector))
-                    for index, (chunk, vector) in enumerate(zip(chunks, embeddings, strict=True))
-                ],
-            )
-        return {"document_id": document_id, "filename": filename, "chunks": len(chunks)}
+    def __init__(
+        self,
+        builder: KnowledgeBuilder,
+        vector_store: Chroma,
+        *,
+        top_k: int = 5,
+    ) -> None:
+        self.builder = builder
+        self.vector_store = vector_store
+        self.top_k = top_k
+        self.retriever = vector_store.as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": top_k},
+        )
+
+    @classmethod
+    def from_settings(cls, settings: Settings) -> "ChromaKnowledgeBase":
+        builder = KnowledgeBuilder.from_settings(settings)
+        vector_store = builder.ensure_vector_store(auto_build=settings.knowledge_auto_build)
+        return cls(builder, vector_store, top_k=settings.rag_top_k)
 
     @staticmethod
-    def _cosine(left: list[float], right: list[float]) -> float:
-        if len(left) != len(right) or not left:
-            return 0.0
-        dot = sum(a * b for a, b in zip(left, right, strict=True))
-        left_norm = math.sqrt(sum(value * value for value in left))
-        right_norm = math.sqrt(sum(value * value for value in right))
-        if not left_norm or not right_norm:
-            return 0.0
-        return dot / (left_norm * right_norm)
-
-    def search(self, query: str, embedder: Embedder, limit: int = 5) -> list[KnowledgeHit]:
-        with self._lock:
-            rows = self._db.execute("""
-                SELECT c.document_id, d.filename, c.content, c.embedding
-                FROM knowledge_chunks c
-                JOIN knowledge_documents d ON d.id = c.document_id
-            """).fetchall()
-        if not rows:
-            return []
-        query_vector = embedder.embed([query])[0]
-        ranked = sorted(
+    def _document_id(filename: str, content: str, metadata: dict[str, Any]) -> str:
+        identity = "|".join(
             (
-                KnowledgeHit(
-                    document_id=row["document_id"],
-                    filename=row["filename"],
-                    content=row["content"],
-                    score=self._cosine(query_vector, json.loads(row["embedding"])),
-                )
-                for row in rows
-            ),
-            key=lambda item: item.score,
-            reverse=True,
+                filename,
+                str(metadata.get("page", "")),
+                str(metadata.get("chunk_index", "")),
+                content,
+            )
         )
-        return ranked[:limit]
+        return hashlib.sha256(identity.encode("utf-8")).hexdigest()
+
+    def search(self, query: str, limit: int | None = None) -> list[KnowledgeHit]:
+        resolved_limit = limit or self.top_k
+        matches = self.vector_store.similarity_search_with_score(query, k=resolved_limit)
+        hits: list[KnowledgeHit] = []
+        for document, distance in matches:
+            metadata = dict(document.metadata)
+            filename = str(metadata.get("source", "unknown"))
+            hits.append(
+                KnowledgeHit(
+                    document_id=self._document_id(filename, document.page_content, metadata),
+                    filename=filename,
+                    content=document.page_content,
+                    score=1.0 / (1.0 + max(0.0, float(distance))),
+                    metadata=metadata,
+                )
+            )
+        return hits
+
+    def ingest(self, filename: str, data: bytes) -> dict[str, int | str]:
+        safe_name = Path(filename).name
+        destination = self.builder.documents_directory / safe_name
+        previous_data = destination.read_bytes() if destination.is_file() else None
+        path = self.builder.save_uploaded_file(safe_name, data)
+        try:
+            documents = self.builder.load_documents([path])
+            chunks = self.builder.index_documents(
+                self.vector_store,
+                documents,
+                replace_sources=True,
+            )
+        except Exception:
+            if previous_data is None:
+                path.unlink(missing_ok=True)
+            else:
+                path.write_bytes(previous_data)
+            raise
+        return {
+            "document_id": hashlib.sha256(path.name.encode("utf-8")).hexdigest(),
+            "filename": path.name,
+            "chunks": chunks,
+        }
+
+    def _all_metadatas(self) -> list[dict[str, Any]]:
+        payload = self.vector_store.get(include=["metadatas"])
+        return [dict(item) for item in payload.get("metadatas") or [] if item]
 
     def document_count(self) -> int:
-        with self._lock:
-            return int(self._db.execute("SELECT COUNT(*) FROM knowledge_documents").fetchone()[0])
+        return len({str(item.get("source")) for item in self._all_metadatas() if item.get("source")})
+
+    def chunk_count(self) -> int:
+        return len(self.vector_store.get(include=[]).get("ids") or [])
 
     def close(self) -> None:
-        self._db.close()
+        self.builder.close()
