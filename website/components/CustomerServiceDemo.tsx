@@ -32,7 +32,8 @@ type HealthResponse = {
   knowledge_documents: number;
 };
 
-const API_BASE_URL = "http://localhost:8000";
+const API_BASE_URL = (process.env.VITE_API_BASE_URL || "http://localhost:8000").replace(/\/+$/, "");
+const API_IS_LOOPBACK = /^http:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?$/i.test(API_BASE_URL);
 
 type LoopbackRequestInit = RequestInit & {
   targetAddressSpace?: "loopback";
@@ -41,15 +42,16 @@ type LoopbackRequestInit = RequestInit & {
 function agentFetch(path: string, init: RequestInit = {}) {
   return fetch(`${API_BASE_URL}${path}`, {
     ...init,
-    targetAddressSpace: "loopback",
+    ...(API_IS_LOOPBACK ? { targetAddressSpace: "loopback" as const } : {}),
   } as LoopbackRequestInit);
 }
 
 const quickPrompts = [
-  "SafeVR 支持哪些培训场景？",
-  "公司的售后政策是什么？",
-  "请总结上传文档中的部署要求",
-  "刚才提到的方案有哪些限制？",
+  "华辰服饰有限公司是一家什么样的企业？",
+  "公司的主要产品有哪些？",
+  "请介绍公司的生产流程",
+  "公司的库存管理流程是什么？",
+  "公司有哪些常见业务问题？",
 ];
 
 function getSessionId() {
@@ -92,7 +94,7 @@ export function CustomerServiceDemo() {
       .then((response) => response.json() as Promise<HealthResponse>)
       .then((payload) => {
         if (!active) return;
-        setRetrieverOnline(payload.status === "ok");
+        setRetrieverOnline(payload.status === "online" || payload.status === "ok");
         setDocumentCount(payload.knowledge_documents ?? 0);
         if ((payload.knowledge_documents ?? 0) > 0) setEmbeddingStatus("ready");
       })
@@ -275,7 +277,17 @@ export function CustomerServiceDemo() {
               <span>快捷示例</span>
               <div>
                 {quickPrompts.map((prompt) => (
-                  <button type="button" key={prompt} disabled={sending} onClick={() => void sendMessage(prompt)}>{prompt}</button>
+                  <button
+                    type="button"
+                    key={prompt}
+                    disabled={sending}
+                    onClick={() => {
+                      setInput(prompt);
+                      void sendMessage(prompt);
+                    }}
+                  >
+                    {prompt}
+                  </button>
                 ))}
               </div>
             </div>
@@ -284,7 +296,7 @@ export function CustomerServiceDemo() {
               <input
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
-                placeholder="输入知识库问题，例如：SafeVR 支持哪些培训场景？"
+                placeholder="输入知识库问题，例如：华辰服饰有限公司是一家什么样的企业？"
                 aria-label="输入客服问题"
                 disabled={sending}
               />

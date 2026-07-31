@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: clothing-company-agent
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      - key: DASHSCOPE_API_KEY
+        sync: false
+      - key: MODEL_NAME
+        value: qwen-plus
+      - key: DASHSCOPE_EMBEDDING_MODEL
+        value: text-embedding-v3
+      - key: KNOWLEDGE_SOURCE_DIR
+        value: /app/knowledge_base/docs
+      - key: KNOWLEDGE_DOCS_DIR
+        value: /app/knowledge_base/docs
+      - key: CHROMA_PERSIST_DIR
+        value: /app/knowledge_base/chroma_db
+      - key: CHROMA_COLLECTION_NAME
+        value: huachen_enterprise
+      - key: KNOWLEDGE_AUTO_BUILD
+        value: "true"
+      - key: CORS_ORIGINS
+        value: https://cuishaoxin.github.io

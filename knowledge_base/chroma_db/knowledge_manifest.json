@@ -1,0 +1,11 @@
+{
+  "source_directory": "knowledge_base/docs",
+  "documents_directory": "knowledge_base/docs",
+  "chroma_directory": "knowledge_base/chroma_db",
+  "collection_name": "huachen_enterprise",
+  "files": 5,
+  "pages": 5,
+  "chunks": 5,
+  "embedding_model": "text-embedding-v3",
+  "built_at": "2026-07-31T03:33:28.000232+00:00"
+}

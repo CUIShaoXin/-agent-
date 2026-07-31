@@ -4,11 +4,11 @@ __pycache__/
 .venv/
 .env
 data/
-knowledge_base/chroma_db/
-knowledge_base/docs/*
-!knowledge_base/docs/.gitkeep
+# The production Docker image ships the prepared enterprise knowledge base.
+# Review these files before publishing because repository contents are public.
 !website/data/
 !website/data/sessions.ts
 *.db
 *.sqlite3
+!knowledge_base/chroma_db/chroma.sqlite3
 *.egg-info/

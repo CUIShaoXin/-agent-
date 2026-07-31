@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from pathlib import Path
 
 
 def _csv(name: str, default: str = "") -> tuple[str, ...]:
@@ -14,11 +13,6 @@ def _boolean(name: str, default: bool = False) -> bool:
     if raw is None:
         return default
     return raw.strip().lower() in {"1", "true", "yes", "on"}
-
-
-def _default_knowledge_source_dir() -> str:
-    desktop_directory = Path.home() / "Desktop" / "clothing_company_knowledge_base"
-    return str(desktop_directory if desktop_directory.is_dir() else Path("knowledge_base/docs"))
 
 
 @dataclass(frozen=True, slots=True)
@@ -59,12 +53,18 @@ class Settings:
             embedding_model=os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small"),
             dashscope_api_key=os.getenv("DASHSCOPE_API_KEY", ""),
             dashscope_embedding_model=os.getenv("DASHSCOPE_EMBEDDING_MODEL", "text-embedding-v3"),
-            dashscope_chat_model=os.getenv("DASHSCOPE_CHAT_MODEL", "qwen-plus"),
+            dashscope_chat_model=os.getenv(
+                "MODEL_NAME",
+                os.getenv("DASHSCOPE_CHAT_MODEL", "qwen-plus"),
+            ),
             agent_db_path=os.getenv("AGENT_DB_PATH", "data/agent.db"),
             knowledge_db_path=os.getenv("KNOWLEDGE_DB_PATH", "data/knowledge.db"),
-            knowledge_source_dir=os.getenv("KNOWLEDGE_SOURCE_DIR", _default_knowledge_source_dir()),
+            knowledge_source_dir=os.getenv("KNOWLEDGE_SOURCE_DIR", "knowledge_base/docs"),
             knowledge_docs_dir=os.getenv("KNOWLEDGE_DOCS_DIR", "knowledge_base/docs"),
-            chroma_db_path=os.getenv("CHROMA_DB_PATH", "knowledge_base/chroma_db"),
+            chroma_db_path=os.getenv(
+                "CHROMA_PERSIST_DIR",
+                os.getenv("CHROMA_DB_PATH", "knowledge_base/chroma_db"),
+            ),
             chroma_collection_name=os.getenv("CHROMA_COLLECTION_NAME", "huachen_enterprise"),
             knowledge_chunk_size=max(100, int(os.getenv("KNOWLEDGE_CHUNK_SIZE", "500"))),
             knowledge_chunk_overlap=max(0, int(os.getenv("KNOWLEDGE_CHUNK_OVERLAP", "100"))),

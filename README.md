@@ -71,7 +71,7 @@ $body = @{ message = "公司的售后政策是什么？"; session_id = "window-1
 Invoke-RestMethod http://localhost:8000/chat -Method Post -ContentType "application/json" -Body $body
 ```
 
-前端复制 `website/.env.example` 为 `website/.env.local`，把 `NEXT_PUBLIC_AGENT_API_URL` 设置为后端地址。线上 GitHub Pages 在仓库 Variables 中配置同名变量。
+前端复制 `website/.env.example` 为 `website/.env.local`，把 `VITE_API_BASE_URL` 设置为后端地址。线上 GitHub Pages 在仓库 Actions Variables 中配置同名变量。公网部署步骤见 `docs/BACKEND_DEPLOYMENT.md`。
 
 智能客服页面的“本次会话”卡片内仍保留“上传知识库”入口。离线目录会在服务启动时自动加载，因此日常使用不需要重复上传。
 

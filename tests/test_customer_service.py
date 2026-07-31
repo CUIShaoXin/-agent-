@@ -223,6 +223,17 @@ class ApiTests(unittest.TestCase):
             self.assertEqual(response.json()["answer"], "API answer")
             self.assertEqual(response.json()["session_id"], "window-1")
 
+    def test_health_contract(self):
+        with tempfile.TemporaryDirectory() as folder:
+            app = create_app(settings_for(folder))
+            app.state.customer_agent = FakeApiAgent()
+            with TestClient(app) as client:
+                response = client.get("/health")
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json()["status"], "online")
+            self.assertEqual(response.json()["service"], "clothing-company-agent")
+            self.assertEqual(response.json()["knowledge_base"], "ready")
+
     def test_post_chat_generates_session_id_when_omitted(self):
         with tempfile.TemporaryDirectory() as folder:
             app = create_app(settings_for(folder))

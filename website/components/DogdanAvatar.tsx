@@ -27,6 +27,7 @@ export function DogdanAvatar({ emotion = "idle", size = "medium", label }: Dogda
         height={520}
         priority={size === "large"}
         src={`${basePath}/mascot/goudan-agent.png`}
+        unoptimized
         width={520}
       />
       <span className="dogdan-emotion-mark" aria-hidden="true">
