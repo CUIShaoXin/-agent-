@@ -18,9 +18,17 @@ const entries = [
   {
     title: "深度强化学习规划",
     button: "查看规划",
-   href: "./rl-planning.html",
+    href: "./rl-planning.html",
     image: "/mascot/goudan-rl-planning.png",
     alt: "狗蛋手持策略地图进行强化学习规划",
+  },
+  {
+    title: "Vibe Coding教程",
+    description: "从想法到项目落地，\n学习如何使用AI辅助完成网站、Agent和应用开发。",
+    button: "开始学习",
+    href: "/vibe-coding",
+    image: "/mascot/goudan-vibe-coding.png",
+    alt: "狗蛋坐在电脑前使用 AI 编程助手学习 Vibe Coding",
   },
 ];
 
@@ -31,7 +39,12 @@ export function MinimalLearningEntry() {
     <main className="minimal-entry-page">
       <div className="minimal-entry-grid">
         {entries.map((entry, index) => (
-          <a className="learning-entry-card" href={entry.href} aria-label={entry.title} key={entry.title}>
+          <a
+            className="learning-entry-card"
+            href={entry.href.startsWith("/") ? `${basePath}${entry.href}` : entry.href}
+            aria-label={entry.title}
+            key={entry.title}
+          >
             <span className="learning-entry-visual">
               <Image
                 alt={entry.alt}
@@ -44,6 +57,7 @@ export function MinimalLearningEntry() {
               />
             </span>
             <strong>{entry.title}</strong>
+            {entry.description ? <span className="learning-entry-description">{entry.description}</span> : null}
             <span className="learning-entry-button">{entry.button} <b>→</b></span>
           </a>
         ))}
