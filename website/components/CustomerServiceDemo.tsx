@@ -34,6 +34,17 @@ type HealthResponse = {
 
 const API_BASE_URL = "http://localhost:8000";
 
+type LoopbackRequestInit = RequestInit & {
+  targetAddressSpace?: "loopback";
+};
+
+function agentFetch(path: string, init: RequestInit = {}) {
+  return fetch(`${API_BASE_URL}${path}`, {
+    ...init,
+    targetAddressSpace: "loopback",
+  } as LoopbackRequestInit);
+}
+
 const quickPrompts = [
   "SafeVR 支持哪些培训场景？",
   "公司的售后政策是什么？",
@@ -77,7 +88,7 @@ export function CustomerServiceDemo() {
 
   useEffect(() => {
     let active = true;
-    void fetch(`${API_BASE_URL}/health`)
+    void agentFetch("/health")
       .then((response) => response.json() as Promise<HealthResponse>)
       .then((payload) => {
         if (!active) return;
@@ -122,7 +133,7 @@ export function CustomerServiceDemo() {
         sessionId.current = getSessionId();
         setActiveSessionId(sessionId.current);
       }
-      const response = await fetch(`${API_BASE_URL}/chat`, {
+      const response = await agentFetch("/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: value, session_id: sessionId.current }),
@@ -180,7 +191,7 @@ export function CustomerServiceDemo() {
     const form = new FormData();
     form.append("file", file);
     try {
-      const response = await fetch(`${API_BASE_URL}/knowledge/upload`, {
+      const response = await agentFetch("/knowledge/upload", {
         method: "POST",
         body: form,
       });

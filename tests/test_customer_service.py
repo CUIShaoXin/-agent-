@@ -200,12 +200,17 @@ class ApiTests(unittest.TestCase):
                         "Origin": "https://cuishaoxin.github.io",
                         "Access-Control-Request-Method": "POST",
                         "Access-Control-Request-Headers": "content-type",
+                        "Access-Control-Request-Private-Network": "true",
                     },
                 )
             self.assertEqual(response.status_code, 200)
             self.assertEqual(
                 response.headers["access-control-allow-origin"],
                 "https://cuishaoxin.github.io",
+            )
+            self.assertEqual(
+                response.headers["access-control-allow-private-network"],
+                "true",
             )
 
     def test_post_chat_contract(self):

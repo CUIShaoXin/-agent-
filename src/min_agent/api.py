@@ -68,6 +68,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_credentials=False,
         allow_methods=["GET", "POST", "OPTIONS"],
         allow_headers=["Content-Type"],
+        allow_private_network=True,
     )
     app.state.settings = resolved
     app.state.customer_agent = None
