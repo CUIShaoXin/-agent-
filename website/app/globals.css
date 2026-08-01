@@ -1993,3 +1993,79 @@ button { color: inherit; }
   .vibe-phase2-card-top img { margin-inline: auto; }
   .vibe-phase2-card dl { grid-template-columns: 1fr; }
 }
+
+/* Vibe Coding · bonus homepage */
+.vibe-bonus-page { --bonus-gold: #f0b532; }
+.vibe-bonus-hero figure { overflow: hidden; padding: 32px; }
+.vibe-bonus-browser {
+  position: relative; z-index: 1; overflow: hidden; width: min(100%,380px); border: 2px solid var(--lesson-ink);
+  border-radius: 17px; background: white; box-shadow: 9px 11px 0 rgba(33,26,44,.9); transform: rotate(2deg);
+}
+.vibe-bonus-browser > div { display: flex; align-items: center; gap: 6px; padding: 10px 12px; background: var(--lesson-ink); }
+.vibe-bonus-browser > div i { width: 7px; height: 7px; border-radius: 50%; background: #ff8090; }
+.vibe-bonus-browser > div i:nth-child(2) { background: #f4bc43; }
+.vibe-bonus-browser > div i:nth-child(3) { background: #66d59a; }
+.vibe-bonus-browser > div span { flex: 1; margin-left: 5px; padding: 5px 8px; border-radius: 5px; background: #3d334a; color: #cfc6d5; font: 7px var(--font-geist-mono),monospace; }
+.vibe-bonus-browser > section { padding: 23px 20px 20px; text-align: center; }
+.vibe-bonus-browser > section img { width: 105px; height: 105px; margin-inline: auto; object-fit: contain; filter: none; }
+.vibe-bonus-browser h2 { margin: 7px 0 5px; font-size: 20px; }
+.vibe-bonus-browser p { margin: 0; color: #786f7c; font-size: 9px; line-height: 1.6; }
+.vibe-bonus-browser nav { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-top: 16px; }
+.vibe-bonus-browser nav b { padding: 12px 4px; border-radius: 8px; background: #eee9ff; color: #654acd; font-size: 7px; }
+.vibe-bonus-concept { padding: 86px 0 48px; text-align: center; }
+.vibe-bonus-concept header > span { display: inline-flex; padding: 7px 10px; border-radius: 6px; background: var(--lesson-ink); color: white; font: 800 9px var(--font-geist-mono),monospace; }
+.vibe-bonus-concept h2 { margin: 14px 0 26px; font-size: clamp(28px,4vw,41px); letter-spacing: -.05em; }
+.vibe-bonus-concept > div { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; text-align: left; }
+.vibe-bonus-concept article { padding: 25px; border: 2px solid var(--lesson-ink); border-radius: 16px; background: #fffefb; box-shadow: 5px 5px 0 var(--lesson-ink); }
+.vibe-bonus-concept article:last-child { background: #eee9ff; }
+.vibe-bonus-concept article > b { color: #6950cc; font: 800 9px var(--font-geist-mono),monospace; }
+.vibe-bonus-concept h3 { margin: 11px 0 7px; font-size: 20px; }
+.vibe-bonus-concept article p { min-height: 42px; margin: 0; color: #746b78; font-size: 10px; line-height: 1.7; }
+.vibe-bonus-concept article span { display: block; margin-top: 17px; padding-top: 13px; border-top: 1px dashed #bdb3c3; color: #4e4654; font: 800 8px var(--font-geist-mono),monospace; }
+.vibe-bonus-naming { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; margin-top: 26px; padding: 22px; border: 1px solid #dcd4e1; border-radius: 13px; background: #faf8fc; }
+.vibe-bonus-naming span { grid-column: 1/-1; color: #776e7b; font-size: 9px; font-weight: 800; }
+.vibe-bonus-naming code { padding: 11px 13px; border: 1px solid #c7bad0; background: white; }
+.vibe-bonus-naming > b { color: #8b8190; font-size: 10px; }
+.vibe-bonus-naming > strong { padding: 11px 13px; border-radius: 7px; background: var(--lesson-purple); color: white; font: 800 10px var(--font-geist-mono),monospace; }
+.vibe-bonus-alert { margin-top: 12px; padding: 18px 20px; border: 1px solid #e4bd5d; border-radius: 11px; background: #fff4d8; }
+.vibe-bonus-alert b { color: #815700; font-size: 11px; }
+.vibe-bonus-alert p { margin: 7px 0 0; color: #725d33; font-size: 10px; line-height: 1.7; }
+.vibe-bonus-repo-steps { margin-top: 20px; }
+.vibe-bonus-prompt code { background: #57496a; color: #d9cdff; }
+.vibe-bonus-form { padding: 21px; border: 1px solid #dcd4e1; border-radius: 13px; background: #faf8fc; }
+.vibe-bonus-form input { width: 100%; border: 1px solid #cfc6d4; border-radius: 10px; outline: 0; padding: 13px 14px; background: white; color: var(--lesson-ink); font: 11px inherit; }
+.vibe-bonus-form input:focus { border-color: var(--lesson-purple); box-shadow: 0 0 0 3px rgba(118,86,255,.12); }
+.vibe-bonus-complete {
+  display: grid; grid-template-columns: minmax(280px,.9fr) minmax(0,1.1fr); gap: 38px; align-items: center;
+  margin-top: 64px; padding: clamp(28px,4vw,44px); border-radius: 24px; background: var(--lesson-ink); color: white;
+  box-shadow: 9px 9px 0 #9f8cf2; scroll-margin-top: 90px;
+}
+.vibe-bonus-complete-visual { position: relative; display: grid; min-height: 350px; place-items: center; border-radius: 18px; background: radial-gradient(circle,#f9f7ff 0 34%,#e6deff 35% 64%,#c8b8ff 65%); }
+.vibe-bonus-complete-visual img { width: 92%; height: 92%; object-fit: contain; filter: drop-shadow(0 18px 19px rgba(33,26,44,.25)); }
+.vibe-bonus-complete-visual span { position: absolute; right: 14px; bottom: 14px; left: 14px; padding: 10px; border: 2px solid var(--lesson-ink); border-radius: 9px; background: white; color: #654acd; font: 800 8px var(--font-geist-mono),monospace; text-align: center; }
+.vibe-bonus-complete > div:last-child > span { color: #b29fff; font: 800 9px var(--font-geist-mono),monospace; }
+.vibe-bonus-complete h2 { margin: 11px 0 8px; font-size: clamp(30px,4vw,43px); letter-spacing: -.05em; }
+.vibe-bonus-complete > div:last-child > p { margin: 0; color: #c6bdca; font-size: 11px; line-height: 1.75; }
+.vibe-bonus-complete blockquote { margin: 18px 0; padding: 17px; border-radius: 12px; background: #332a40; color: white; font-size: 11px; line-height: 1.7; }
+.vibe-bonus-complete blockquote b { display: block; margin-bottom: 6px; color: #b29fff; font: 800 8px var(--font-geist-mono),monospace; }
+.vibe-bonus-complete ul { display: grid; gap: 8px; margin: 0; padding-left: 18px; }
+.vibe-bonus-complete li { color: #c0b7c5; font-size: 9px; line-height: 1.6; }
+.vibe-bonus-complete > div:last-child > a { display: inline-block; margin-top: 18px; padding: 12px 15px; border-radius: 9px; background: white; color: var(--lesson-ink); font-size: 10px; font-weight: 800; }
+
+@media (max-width: 820px) {
+  .vibe-bonus-concept > div { grid-template-columns: 1fr; }
+  .vibe-bonus-concept article p { min-height: auto; }
+  .vibe-bonus-complete { grid-template-columns: 1fr; }
+  .vibe-bonus-complete-visual { min-height: 320px; }
+}
+
+@media (max-width: 520px) {
+  .vibe-bonus-hero figure { padding: 22px; }
+  .vibe-bonus-browser { transform: none; }
+  .vibe-bonus-concept { padding-block: 65px 36px; }
+  .vibe-bonus-naming { grid-template-columns: 1fr; }
+  .vibe-bonus-naming span { grid-column: 1; }
+  .vibe-bonus-naming > b { justify-self: center; }
+  .vibe-bonus-complete { padding: 23px 19px; }
+  .vibe-bonus-complete-visual { min-height: 280px; }
+}
