@@ -41,6 +41,7 @@ export default function VibeCodingPage() {
   const lessonTwoHref = `${basePath}/vibe-coding/phase-one/lesson-2/`;
   const bonusHomepageHref = `${basePath}/vibe-coding/phase-one/bonus-homepage/`;
   const lessonThreeHref = `${basePath}/vibe-coding/phase-one/lesson-3/`;
+  const lessonFourHref = `${basePath}/vibe-coding/phase-one/lesson-4/`;
 
   return (
     <main className="vibe-course-page">
@@ -209,7 +210,7 @@ export default function VibeCodingPage() {
               <article><span>第 2 课 · 周日 ①</span><h3>🔎 找到一个真问题</h3><p>不碰代码，用“六个一”框架找到真正值得做、你也做得到的问题。</p><a href={lessonTwoHref}>进入第 2 课 →</a></article>
               <article className="vibe-phase-project"><span>课间选修 · 学完前两课</span><h3>🏠 做一个自己的个人主页</h3><p>用 AI 编程工具做一个公开的个人主页，练习把内容组织成能被别人看懂的作品。</p><a href={bonusHomepageHref}>进入课间选修 →</a></article>
               <article><span>第 3 课 · 周六 ②</span><h3>🛠️ 做一个真能用的 AI 工具</h3><p>把问题卡做成会调用 AI、能处理失败、被真实样本验证过的小应用。</p><a href={lessonThreeHref}>进入第 3 课 →</a></article>
-              <article><span>第 4 课 · 周日 ②</span><h3>🚀 部署上线，变成一个链接</h3><p>上线到托管平台，打磨简历和作品页，收集第一条真实反馈。</p><a href="#phase-one-map">进入第 4 课 →</a></article>
+              <article><span>第 4 课 · 周日 ②</span><h3>🚀 部署上线，变成一个链接</h3><p>上线到托管平台，打磨简历和作品页，收集第一条真实反馈。</p><a href={lessonFourHref}>进入第 4 课 →</a></article>
             </div>
           </section>
 
