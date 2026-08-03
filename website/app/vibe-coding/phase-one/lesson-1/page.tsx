@@ -16,7 +16,7 @@ export default function VibeCodingLessonOnePage() {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
   return (
-    <main className="vibe-lesson-page">
+    <main className="vibe-lesson-page vibe-lesson1-page">
       <header className="vibe-lesson-header">
         <a href={`${basePath}/vibe-coding/#phase-one`} className="vibe-lesson-brand">
           <span><Image alt="狗蛋" height={52} src={`${basePath}/mascot/goudan-agent.png`} unoptimized width={52} /></span>
