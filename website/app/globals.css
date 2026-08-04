@@ -2491,3 +2491,74 @@ button { color: inherit; }
   .vibe-lesson3-page .vibe-lesson3-rule { align-items: flex-start; flex-wrap: wrap; }
   .vibe-lesson3-page .vibe-lesson3-rule b { margin-left: 0; }
 }
+
+/* Vibe Coding · lesson four readability */
+.vibe-lesson4-page .vibe-lesson-brand small { color: #ddd5e3; font-size: 11px; }
+.vibe-lesson4-page .vibe-lesson-header nav span { color: #d1c8d8; font-size: 10px; }
+.vibe-lesson4-page .vibe-lesson-exit { color: #f0eaf3; font-size: 12px; }
+.vibe-lesson4-page .vibe-lesson-hero-copy > span,
+.vibe-lesson4-page .vibe-lesson-stage-body header > span { padding: 8px 11px; font-size: 11px; }
+.vibe-lesson4-page .vibe-lesson-hero h1 { font-size: clamp(40px,4.8vw,56px); line-height: 1.06; }
+.vibe-lesson4-page .vibe-lesson-hero-copy > p { color: #4f4754; font-size: 15px; line-height: 1.8; }
+.vibe-lesson4-page .vibe-lesson-hero-copy > div b { color: #4c4253; font-size: 11px; }
+.vibe-lesson4-page .vibe-lesson-hero-copy > a,
+.vibe-lesson4-page .vibe-lesson-next { font-size: 14px; }
+.vibe-lesson4-page .vibe-lesson-hero figcaption { color: #f3eef7; font-size: 11px; line-height: 1.55; }
+.vibe-lesson4-page .vibe-lesson4-launch span,
+.vibe-lesson4-page .vibe-lesson4-launch strong { font-size: 10px; }
+.vibe-lesson4-page .vibe-lesson4-definition b { font-size: 13px; }
+.vibe-lesson4-page .vibe-lesson4-definition p { color: #4f4654; font-size: 13px; line-height: 1.65; }
+.vibe-lesson4-page .vibe-lesson4-definition span { color: #4f33bd; font-size: 10px; }
+.vibe-lesson4-page .vibe-lesson-stage-no span { color: #655c6b; font-size: 10px; }
+.vibe-lesson4-page .vibe-lesson-stage-body header h2 { font-size: clamp(28px,3.5vw,38px); }
+.vibe-lesson4-page .vibe-lesson-stage-body header p { color: #514954; font-size: 14px; line-height: 1.75; }
+.vibe-lesson4-page .vibe-lesson-checklist strong { font-size: 14px; }
+.vibe-lesson4-page .vibe-lesson-checklist small { color: #554d59; font-size: 12px; line-height: 1.65; }
+.vibe-lesson4-page .vibe-lesson-steps li { color: #504854; font-size: 13px; line-height: 1.65; }
+.vibe-lesson4-page .vibe-lesson-steps li b { color: #4f33bd; font-size: 11px; }
+.vibe-lesson4-page .vibe-phase2-form label { color: #403746; font-size: 12px; }
+.vibe-lesson4-page .vibe-phase2-form input,
+.vibe-lesson4-page .vibe-phase2-form textarea { color: #312938; font-size: 13px; }
+.vibe-lesson4-page .vibe-phase2-form input::placeholder,
+.vibe-lesson4-page .vibe-phase2-form textarea::placeholder,
+.vibe-lesson4-page .vibe-lesson4-portfolio textarea::placeholder,
+.vibe-lesson4-page .vibe-lesson4-resume input::placeholder { color: #6e6473; opacity: 1; }
+.vibe-lesson4-page .vibe-lesson-warning b { color: #6d4500; font-size: 12px; }
+.vibe-lesson4-page .vibe-lesson-warning p { color: #604b2c; font-size: 12px; line-height: 1.7; }
+.vibe-lesson4-page .vibe-lesson4-vault span { font-size: 10px; }
+.vibe-lesson4-page .vibe-lesson4-vault span:first-child { color: #99363e; }
+.vibe-lesson4-page .vibe-lesson4-vault span:nth-of-type(2) { color: #17643c; }
+.vibe-lesson4-page .vibe-lesson4-vault b { color: #3d3542; font-size: 12px; }
+.vibe-lesson4-page .vibe-lesson-memory b { color: #5337bf; font-size: 10px; }
+.vibe-lesson4-page .vibe-lesson-memory strong { font-size: 18px; }
+.vibe-lesson4-page .vibe-lesson-memory span { color: #574e5d; font-size: 11px; line-height: 1.6; }
+.vibe-lesson4-page .vibe-lesson3-key span { font-size: 9px; }
+.vibe-lesson4-page .vibe-lesson3-key b { font-size: 12px; }
+.vibe-lesson4-page .vibe-lesson3-key i { color: #5c5361; font-size: 10px; }
+.vibe-lesson4-page .vibe-lesson4-portfolio span { font-size: 10px; }
+.vibe-lesson4-page .vibe-lesson4-portfolio b { font-size: 12px; }
+.vibe-lesson4-page .vibe-lesson4-portfolio textarea { color: #312938; font-size: 12px; line-height: 1.6; }
+.vibe-lesson4-page .vibe-lesson4-preview > span { color: #c8b8ff; font-size: 10px; }
+.vibe-lesson4-page .vibe-lesson4-preview b { font-size: 11px; }
+.vibe-lesson4-page .vibe-lesson4-preview p { color: #e0d8e4; font-size: 11px; line-height: 1.55; }
+.vibe-lesson4-page .vibe-lesson4-resume label { color: #403746; font-size: 11px; }
+.vibe-lesson4-page .vibe-lesson4-resume input { color: #312938; font-size: 12px; }
+.vibe-lesson4-page .vibe-lesson4-resume-line { color: #433a49; font-size: 13px; line-height: 1.8; }
+.vibe-lesson4-page .vibe-prompt-compare span { font-size: 12px; }
+.vibe-lesson4-page .vibe-prompt-compare p { color: #4d4552; font-size: 13px; }
+.vibe-lesson4-page .vibe-lesson4-complete > div:last-child > span { color: #c8b8ff; font-size: 11px; }
+.vibe-lesson4-page .vibe-lesson4-complete p { color: #e1d9e5; font-size: 13px; line-height: 1.75; }
+.vibe-lesson4-page .vibe-lesson4-achievements b { color: #f0eaf4; font-size: 10px; }
+.vibe-lesson4-page .vibe-lesson4-complete blockquote { color: #f0eaf4; font-size: 12px; line-height: 1.7; }
+.vibe-lesson4-page .vibe-lesson4-complete a { font-size: 12px; }
+.vibe-lesson4-page .vibe-lesson-footer strong { font-size: 12px; }
+.vibe-lesson4-page .vibe-lesson-footer span { color: #e2dae6; font-size: 11px; }
+
+@media (max-width: 520px) {
+  .vibe-lesson4-page .vibe-lesson-hero h1 { font-size: 38px; }
+  .vibe-lesson4-page .vibe-lesson-hero-copy > p,
+  .vibe-lesson4-page .vibe-lesson-stage-body header p { font-size: 13px; }
+  .vibe-lesson4-page .vibe-lesson4-definition p { font-size: 12px; }
+  .vibe-lesson4-page .vibe-lesson4-launch span,
+  .vibe-lesson4-page .vibe-lesson4-launch strong { overflow-wrap: anywhere; }
+}
